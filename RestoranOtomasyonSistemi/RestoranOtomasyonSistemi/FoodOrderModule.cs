@@ -11,6 +11,10 @@ namespace RestoranOtomasyonSistemi
         public FoodOrderModule()
         {
             InitializeComponent();
+            UpdateTotalAmountOfBasket();
+            dataGridView1.AutoGenerateColumns = true;
+            dataGridView1.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+            dataGridView1.AllowUserToAddRows = true;
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -72,8 +76,11 @@ namespace RestoranOtomasyonSistemi
             Button clickedButton = (Button)sender;
             var tag = clickedButton.Tag as dynamic;
             basketInfo.AddToBasket(tag);
+            dataGridView1.DataSource = null;
+            dataGridView1.DataSource = basketInfo.ReadyToOrderFoods;
+            dataGridView1.Refresh();
 
-
+            UpdateTotalAmountOfBasket();
         }
 
         private void CompleteOrder()
@@ -82,26 +89,34 @@ namespace RestoranOtomasyonSistemi
             {
                 databaseService.SellProduct(foodId, 1);
             }
+
+            dataGridView1.DataSource = null;
+            dataGridView1.Rows.Clear();
+
             UpdateMenu();
+            basketInfo.ClearBasket();
+            UpdateTotalAmountOfBasket();
+
         }
 
-        public class FoodInfo
+        private void button3_Click(object sender, EventArgs e)
         {
-            public int FoodID;
-            public string FoodName;
-            public decimal FoodPrice;
-            public int Stock;
+            dataGridView1.DataSource = null;
+            dataGridView1.Rows.Clear();
+            basketInfo.ClearBasket();
+            UpdateTotalAmountOfBasket();
         }
 
-        public class BasketInfo
+
+        private void UpdateTotalAmountOfBasket()
         {
-            public List<int> ReadyToOrderFoods = new List<int>();
-
-            public void AddToBasket(int foodID)
-            { ReadyToOrderFoods.Add(foodID); }
-
+            textBox1.Text = basketInfo.GetTotalAmount().ToString() + " TL";
 
         }
 
+        private void label1_Click(object sender, EventArgs e)
+        {
+
+        }
     }
-    }
+}

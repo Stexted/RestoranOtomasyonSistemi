@@ -206,7 +206,7 @@ namespace RestoranOtomasyonSistemi
             }
         }
 
-        public bool SellProduct(int yemekID, int decreaseAmount)
+        public bool SellProduct(FoodInfo foodInfo, int decreaseAmount)
         {
             try
             {
@@ -214,7 +214,7 @@ namespace RestoranOtomasyonSistemi
 
  
                 SqlCommand commandSelect = new SqlCommand(querySelect, connection);
-                commandSelect.Parameters.AddWithValue("@YemekID", yemekID);
+                commandSelect.Parameters.AddWithValue("@YemekID", foodInfo.FoodID);
 
 
                 int currentStock = (int)commandSelect.ExecuteScalar();
@@ -230,11 +230,10 @@ namespace RestoranOtomasyonSistemi
                 string queryUpdate = "UPDATE Yemekler SET Stok = @Stok WHERE YemekID = @YemekID";
                 SqlCommand commandUpdate = new SqlCommand(queryUpdate, connection);
                 commandUpdate.Parameters.AddWithValue("@Stok", newStock);
-                commandUpdate.Parameters.AddWithValue("@YemekID", yemekID);
+                commandUpdate.Parameters.AddWithValue("@YemekID", foodInfo.FoodID);
 
                 commandUpdate.ExecuteNonQuery();
-                var currentFood = GetFoodInfoById(yemekID);
-                AddReportEntry("Ürün satışı gerçekleşti: " + currentFood.FoodName + " Satılan Miktar :" + decreaseAmount);
+                AddReportEntry("Ürün satışı gerçekleşti: " + foodInfo.FoodName + " Satılan Miktar :" + decreaseAmount);
 
                 LoadFoods();
                 return false;
