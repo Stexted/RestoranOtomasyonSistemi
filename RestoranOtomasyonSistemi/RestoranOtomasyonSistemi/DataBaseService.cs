@@ -11,7 +11,7 @@ namespace RestoranOtomasyonSistemi
     public class DataBaseService : BaseService
     {
 
-        private string connectionString = "Server=localhost\\SQLExpress; Database=TestDB; Integrated Security=True; Encrypt=False;";
+        private string connectionString = "Server=SINAN\\SQLEXPRESS; Database=TestDB; Integrated Security=True; Encrypt=False;";
         private SqlConnection connection;
 
         public override void InitializeService()
