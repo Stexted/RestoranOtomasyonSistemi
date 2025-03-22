@@ -81,22 +81,20 @@ namespace RestoranOtomasyonSistemi
             try
             {
 
-                // Veritabanını silmek için SQL komutunu yaz
-                string dropDatabaseQuery = "DROP DATABASE TestDB";  // Burada 'TestDB' yerine silmek istediğiniz veritabanı adını yazabilirsiniz
+             
+                string dropDatabaseQuery = "DROP DATABASE TestDB";  
 
-                // SQL komutunu çalıştır
+             
                 SqlCommand command = new SqlCommand(dropDatabaseQuery, connection);
-                command.ExecuteNonQuery();  // Komutu çalıştır
+                command.ExecuteNonQuery();  
                 CloseSQLConnection();
-
-                // Başarılı olduğunu kullanıcıya bildir
+           
                 MessageBox.Show("Veritabanı başarıyla silindi!");
                 
             }
     
             catch (Exception ex)
             {
-                // Hata durumunda kullanıcıya bildirim göster
                 MessageBox.Show("Veritabanı silinirken bir hata oluştu: " + ex.Message);
             }
 
@@ -212,7 +210,6 @@ namespace RestoranOtomasyonSistemi
         {
             try
             {
-                // Yemeklerin mevcut stok bilgisini almak için sorgu yazıyoruz.
                 string querySelect = "SELECT Stok FROM Yemekler WHERE YemekID = @YemekID";
 
  
@@ -220,20 +217,16 @@ namespace RestoranOtomasyonSistemi
                 commandSelect.Parameters.AddWithValue("@YemekID", yemekID);
 
 
-                // Mevcut stok değerini alıyoruz
                 int currentStock = (int)commandSelect.ExecuteScalar();
 
-                // Mevcut stoktan çıkarma işlemini yapıyoruz.
                 int newStock = currentStock - decreaseAmount;
 
-                // Eğer stok sıfırın altına düşüyorsa, bunu engellemek için kontrol ekliyoruz
                 if (newStock < 0)
                 {
                     MessageBox.Show("Stok miktarı yetersiz.");
                     return false;
                 }
 
-                // Yeni stok değeri ile güncelleme işlemi
                 string queryUpdate = "UPDATE Yemekler SET Stok = @Stok WHERE YemekID = @YemekID";
                 SqlCommand commandUpdate = new SqlCommand(queryUpdate, connection);
                 commandUpdate.Parameters.AddWithValue("@Stok", newStock);
@@ -243,8 +236,6 @@ namespace RestoranOtomasyonSistemi
                 var currentFood = GetFoodInfoById(yemekID);
                 AddReportEntry("Ürün satışı gerçekleşti: " + currentFood.FoodName + " Satılan Miktar :" + decreaseAmount);
 
-
-                // Stok güncelleme işlemi tamamlandıktan sonra listeyi yeniden yüklüyoruz
                 LoadFoods();
                 return false;
                 

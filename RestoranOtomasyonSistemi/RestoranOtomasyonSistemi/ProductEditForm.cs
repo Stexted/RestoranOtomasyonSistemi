@@ -29,7 +29,7 @@ namespace RestoranOtomasyonSistemi
 
         private void AddControls()
         {
-            // DataGridView Bileşenini ekle
+           
             dataGridView1 = new DataGridView
             {
                 Location = new System.Drawing.Point(20, 150),
@@ -40,7 +40,7 @@ namespace RestoranOtomasyonSistemi
 
             dataGridView1.SelectionChanged += dataGridView1_SelectionChanged;
 
-            // Yemek Adı TextBox
+        
             txtYemekAdi = new TextBox
             {
                 Location = new System.Drawing.Point(20, 20),
@@ -48,7 +48,7 @@ namespace RestoranOtomasyonSistemi
             };
             this.Controls.Add(txtYemekAdi);
 
-            // Fiyat TextBox
+     
             txtFiyat = new TextBox
             {
                 Location = new System.Drawing.Point(20, 50),
@@ -56,7 +56,7 @@ namespace RestoranOtomasyonSistemi
             };
             this.Controls.Add(txtFiyat);
 
-            // Stok TextBox
+
             txtStok = new TextBox
             {
                 Location = new System.Drawing.Point(20, 80),
@@ -64,7 +64,6 @@ namespace RestoranOtomasyonSistemi
             };
             this.Controls.Add(txtStok);
 
-            // Ekle Button
             btnEkle = new Button
             {
                 Text = "Ekle",
@@ -74,7 +73,6 @@ namespace RestoranOtomasyonSistemi
             btnEkle.Click += btnEkle_Click;
             this.Controls.Add(btnEkle);
 
-            // Düzenle Button
             btnDuzenle = new Button
             {
                 Text = "Düzenle",
@@ -84,7 +82,6 @@ namespace RestoranOtomasyonSistemi
             btnDuzenle.Click += btnDuzenle_Click;
             this.Controls.Add(btnDuzenle);
 
-            // Sil Button
             btnSil = new Button
             {
                 Text = "Sil",
@@ -103,11 +100,11 @@ namespace RestoranOtomasyonSistemi
 
             try
             {
-                string query = "SELECT * FROM Yemekler"; // Yemekler tablosundaki tüm verileri al
+                string query = "SELECT * FROM Yemekler"; 
                 SqlDataAdapter adapter = new SqlDataAdapter(query, connection);
                 DataTable dataTable = new DataTable();
                 adapter.Fill(dataTable);
-                dataGridView1.DataSource = dataTable; // Veriyi DataGridView'e bağla
+                dataGridView1.DataSource = dataTable; 
             }
             catch (Exception ex)
             {
@@ -116,7 +113,7 @@ namespace RestoranOtomasyonSistemi
             
         }
 
-        // Yeni yemek ekleme
+        
         private void btnEkle_Click(object sender, EventArgs e)
         {
             string yemekAdi = txtYemekAdi.Text;
@@ -185,7 +182,7 @@ namespace RestoranOtomasyonSistemi
                     if (rowsAffected > 0)
                     {
                         MessageBox.Show("Yemek başarıyla güncellendi.");
-                        LoadData(); // Veritabanındaki veriyi güncelledikten sonra DataGridView'i güncelle
+                        LoadData(); 
                     }
                 }
                 catch (Exception ex)
@@ -200,7 +197,6 @@ namespace RestoranOtomasyonSistemi
             }
         }
 
-        // Seçilen yemeği silme
         private void btnSil_Click(object sender, EventArgs e)
         {
             if (dataGridView1.SelectedRows.Count > 0)
@@ -224,7 +220,7 @@ namespace RestoranOtomasyonSistemi
                     {
                         MessageBox.Show("Yemek başarıyla silindi.");
                         dataBaseService.AddReportEntry("Ürün silindi :" + yemekId);
-                        LoadData(); // Veritabanından veri sildikten sonra DataGridView'i güncelle
+                        LoadData(); 
                     }
                 }
                 catch (Exception ex)

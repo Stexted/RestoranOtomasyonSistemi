@@ -32,9 +32,6 @@ namespace RestoranOtomasyonSistemi
         {
             button1 = new Button();
             SuspendLayout();
-            // 
-            // button1
-            // 
             button1.Location = new Point(641, 404);
             button1.Name = "button1";
             button1.Size = new Size(126, 23);

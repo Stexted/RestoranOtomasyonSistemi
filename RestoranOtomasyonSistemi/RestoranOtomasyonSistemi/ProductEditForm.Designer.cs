@@ -41,25 +41,13 @@
         /// </summary>
         private void InitializeComponent()
         {
-            button1 = new Button();
             SuspendLayout();
-            // 
-            // button1
-            // 
-            button1.Location = new Point(1017, 639);
-            button1.Name = "button1";
-            button1.Size = new Size(98, 23);
-            button1.TabIndex = 0;
-            button1.Text = "DB Çağır";
-            button1.UseVisualStyleBackColor = true;
-            button1.Click += button1_Click_1;
             // 
             // ProductEditForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(1139, 686);
-            Controls.Add(button1);
             Name = "ProductEditForm";
             Text = "ProductEditForm";
             Load += ProductEditForm_Load;
@@ -67,7 +55,5 @@
         }
 
         #endregion
-
-        private Button button1;
     }
 }
