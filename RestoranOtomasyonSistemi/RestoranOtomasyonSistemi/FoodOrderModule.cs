@@ -8,6 +8,7 @@ namespace RestoranOtomasyonSistemi
         private string connectionString = "Server=localhost\\SQLExpress; Database=TestDB; Integrated Security=True; Encrypt=False;";
         
         private DataBaseService databaseService;
+        private List<Button> orderButtons = new List<Button>();
 
         public FoodOrderModule()
         {
@@ -18,8 +19,24 @@ namespace RestoranOtomasyonSistemi
         {
             databaseService = new DataBaseService();
 
-          
+            UpdateMenu();
+        }
+
+        private void UpdateMenu()
+        {
             var loadedFoods = databaseService.LoadYemekler();
+
+
+            foreach (Control control in orderButtons)
+            {
+                if (control is Button)
+                {
+                    this.Controls.Remove(control);
+                    control.Dispose();
+                }
+            }
+
+            orderButtons.Clear();
 
 
             if (loadedFoods != null)
@@ -27,26 +44,42 @@ namespace RestoranOtomasyonSistemi
                 var yOffset = 5;
                 foreach (var food in loadedFoods)
                 {
-                    Button orderButton = new Button();
-                    orderButton.Text = $"{food.FoodName} - {food.FoodPrice:C2}";
-                    orderButton.Name = $"btnOrder_{food.FoodID}";
-                    orderButton.Tag = food.FoodID;
-                    orderButton.Location = new Point(20, yOffset);
-                    orderButton.Size = new Size(200, 40);
+                    if (food != null && food.Stock > 0)
+                    {
+                        Button orderButton = new Button();
+                        orderButtons.Add(orderButton);
 
-                    this.Controls.Add(orderButton);
+                        orderButton.Text = $"{food.FoodName} - {food.FoodPrice:C2}";
+                        orderButton.Name = $"btnOrder_{food.FoodID}";
+                        orderButton.Tag = food.FoodID;
+                        orderButton.Location = new Point(20, yOffset);
+                        orderButton.Size = new Size(200, 40);
+                        orderButton.Click += OrderFood;
 
-                    yOffset += 50;
+                        this.Controls.Add(orderButton);
+
+                        yOffset += 50;
+                    }
                 }
             }
         }
 
+        private void OrderFood(object? sender, EventArgs e)
+        {
+            Button clickedButton = (Button)sender;
+            var tag = clickedButton.Tag as dynamic;
+            databaseService.UpdateStock(tag, 0);
+
+            UpdateMenu();
+            
+        }
 
         public class FoodInfo
         {
             public int FoodID;
             public string FoodName;
             public decimal FoodPrice;
+            public int Stock;
 
         }
 

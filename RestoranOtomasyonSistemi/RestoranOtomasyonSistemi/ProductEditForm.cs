@@ -38,6 +38,8 @@ namespace RestoranOtomasyonSistemi
             };
             this.Controls.Add(dataGridView1);
 
+            dataGridView1.SelectionChanged += dataGridView1_SelectionChanged;
+
             // Yemek Adı TextBox
             txtYemekAdi = new TextBox
             {
@@ -143,6 +145,18 @@ namespace RestoranOtomasyonSistemi
                 {
                     MessageBox.Show("Hata: " + ex.Message);
                 }
+            }
+        }
+
+        private void dataGridView1_SelectionChanged(object sender, EventArgs e)
+        {
+            if (dataGridView1.SelectedRows.Count > 0)
+            {
+                // Seçilen satırın verilerini al
+                DataGridViewRow selectedRow = dataGridView1.SelectedRows[0];
+                txtYemekAdi.Text = selectedRow.Cells["YemekAdi"].Value.ToString();
+                txtFiyat.Text = selectedRow.Cells["Fiyat"].Value.ToString();
+                txtStok.Text = selectedRow.Cells["Stok"].Value.ToString();
             }
         }
 

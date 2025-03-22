@@ -97,7 +97,7 @@ namespace RestoranOtomasyonSistemi
         public List<FoodInfo> LoadYemekler()
         {
             var result = new List<FoodInfo>();
-            string query = "SELECT YemekID, YemekAdi, Fiyat FROM Yemekler";
+            string query = "SELECT YemekID, YemekAdi, Fiyat, Stok FROM Yemekler";
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
                 try
@@ -110,11 +110,13 @@ namespace RestoranOtomasyonSistemi
                             int yOffset = 20;
                             while (reader.Read())
                             {
-                                string yemekAdi = reader.GetString(1);
-                                decimal fiyat = reader.GetDecimal(2);
                                 int yemekID = reader.GetInt32(0);
 
-                                result.Add(new FoodInfo { FoodID = yemekID, FoodName = yemekAdi, FoodPrice = fiyat });
+                                string yemekAdi = reader.GetString(1);
+                                decimal fiyat = reader.GetDecimal(2);
+                                int stok = reader.GetInt32(3);
+
+                                result.Add(new FoodInfo { FoodID = yemekID, FoodName = yemekAdi, FoodPrice = fiyat, Stock = stok });
                             }
                         }
                     }
@@ -126,6 +128,31 @@ namespace RestoranOtomasyonSistemi
                     MessageBox.Show("Hata: " + ex.Message);
                     return null;
                 }
+            }
+        }
+
+        public void UpdateStock(int yemekID, int newStock)
+        {
+            try
+            {
+                string query = "UPDATE Yemekler SET Stok = @Stok WHERE YemekID = @YemekID";
+                using (SqlConnection connection = new SqlConnection(connectionString))
+                {
+                    SqlCommand command = new SqlCommand(query, connection);
+                    command.Parameters.AddWithValue("@Stok", newStock);
+                    command.Parameters.AddWithValue("@YemekID", yemekID);
+
+                    connection.Open();
+                    command.ExecuteNonQuery();
+                    connection.Close();
+
+                    // Güncel veriyi DataGridView'e yeniden yükleyelim
+                    LoadYemekler();
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Hata: {ex.Message}");
             }
         }
 
