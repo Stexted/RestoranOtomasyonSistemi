@@ -13,9 +13,6 @@ namespace RestoranOtomasyonSistemi
 {
     public partial class ProductEditForm : Form
     {
-
-        private string connectionString = "Server=localhost\\SQLExpress; Database=TestDB; Integrated Security=True; Encrypt=False;";
-
         public ProductEditForm()
         {
             InitializeComponent();
@@ -98,22 +95,22 @@ namespace RestoranOtomasyonSistemi
 
         private void LoadData()
         {
-            using (SqlConnection connection = new SqlConnection(connectionString))
+
+            var connection = ServiceLocator.GetService<DataBaseService>().GetCurrentConnection();
+
+            try
             {
-                try
-                {
-                    connection.Open();
-                    string query = "SELECT * FROM Yemekler"; // Yemekler tablosundaki tüm verileri al
-                    SqlDataAdapter adapter = new SqlDataAdapter(query, connection);
-                    DataTable dataTable = new DataTable();
-                    adapter.Fill(dataTable);
-                    dataGridView1.DataSource = dataTable; // Veriyi DataGridView'e bağla
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show("Hata: " + ex.Message);
-                }
+                string query = "SELECT * FROM Yemekler"; // Yemekler tablosundaki tüm verileri al
+                SqlDataAdapter adapter = new SqlDataAdapter(query, connection);
+                DataTable dataTable = new DataTable();
+                adapter.Fill(dataTable);
+                dataGridView1.DataSource = dataTable; // Veriyi DataGridView'e bağla
             }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Hata: " + ex.Message);
+            }
+            
         }
 
         // Yeni yemek ekleme
@@ -123,36 +120,34 @@ namespace RestoranOtomasyonSistemi
             decimal fiyat = Convert.ToDecimal(txtFiyat.Text);
             int stok = Convert.ToInt32(txtStok.Text);
 
-            using (SqlConnection connection = new SqlConnection(connectionString))
-            {
-                try
-                {
-                    connection.Open();
-                    string query = "INSERT INTO Yemekler (YemekAdi, Fiyat, Stok) VALUES (@YemekAdi, @Fiyat, @Stok)";
-                    SqlCommand command = new SqlCommand(query, connection);
-                    command.Parameters.AddWithValue("@YemekAdi", yemekAdi);
-                    command.Parameters.AddWithValue("@Fiyat", fiyat);
-                    command.Parameters.AddWithValue("@Stok", stok);
+            var connection = ServiceLocator.GetService<DataBaseService>().GetCurrentConnection();
 
-                    int rowsAffected = command.ExecuteNonQuery();
-                    if (rowsAffected > 0)
-                    {
-                        MessageBox.Show("Yemek başarıyla eklendi.");
-                        LoadData(); // Yeni yemek eklendikten sonra DataGridView'i güncelle
-                    }
-                }
-                catch (Exception ex)
+            try
+            {
+                string query = "INSERT INTO Yemekler (YemekAdi, Fiyat, Stok) VALUES (@YemekAdi, @Fiyat, @Stok)";
+                SqlCommand command = new SqlCommand(query, connection);
+                command.Parameters.AddWithValue("@YemekAdi", yemekAdi);
+                command.Parameters.AddWithValue("@Fiyat", fiyat);
+                command.Parameters.AddWithValue("@Stok", stok);
+
+                int rowsAffected = command.ExecuteNonQuery();
+                if (rowsAffected > 0)
                 {
-                    MessageBox.Show("Hata: " + ex.Message);
+                    MessageBox.Show("Yemek başarıyla eklendi.");
+                    LoadData();
                 }
             }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Hata: " + ex.Message);
+            }
+            
         }
 
         private void dataGridView1_SelectionChanged(object sender, EventArgs e)
         {
             if (dataGridView1.SelectedRows.Count > 0)
             {
-                // Seçilen satırın verilerini al
                 DataGridViewRow selectedRow = dataGridView1.SelectedRows[0];
                 txtYemekAdi.Text = selectedRow.Cells["YemekAdi"].Value.ToString();
                 txtFiyat.Text = selectedRow.Cells["Fiyat"].Value.ToString();
@@ -160,7 +155,6 @@ namespace RestoranOtomasyonSistemi
             }
         }
 
-        // Seçilen yemeği düzenleme
         private void btnDuzenle_Click(object sender, EventArgs e)
         {
             if (dataGridView1.SelectedRows.Count > 0)
@@ -170,31 +164,30 @@ namespace RestoranOtomasyonSistemi
                 string yeniYemekAdi = txtYemekAdi.Text;
                 decimal yeniFiyat = Convert.ToDecimal(txtFiyat.Text);
                 int yeniStok = Convert.ToInt32(txtStok.Text);
+                var connection = ServiceLocator.GetService<DataBaseService>().GetCurrentConnection();
 
-                using (SqlConnection connection = new SqlConnection(connectionString))
+                try
                 {
-                    try
-                    {
-                        connection.Open();
-                        string query = "UPDATE Yemekler SET YemekAdi = @YemekAdi, Fiyat = @Fiyat, Stok = @Stok WHERE YemekID = @YemekID";
-                        SqlCommand command = new SqlCommand(query, connection);
-                        command.Parameters.AddWithValue("@YemekAdi", yeniYemekAdi);
-                        command.Parameters.AddWithValue("@Fiyat", yeniFiyat);
-                        command.Parameters.AddWithValue("@Stok", yeniStok);
-                        command.Parameters.AddWithValue("@YemekID", yemekId);
+ 
+                    string query = "UPDATE Yemekler SET YemekAdi = @YemekAdi, Fiyat = @Fiyat, Stok = @Stok WHERE YemekID = @YemekID";
+                    SqlCommand command = new SqlCommand(query, connection);
+                    command.Parameters.AddWithValue("@YemekAdi", yeniYemekAdi);
+                    command.Parameters.AddWithValue("@Fiyat", yeniFiyat);
+                    command.Parameters.AddWithValue("@Stok", yeniStok);
+                    command.Parameters.AddWithValue("@YemekID", yemekId);
 
-                        int rowsAffected = command.ExecuteNonQuery();
-                        if (rowsAffected > 0)
-                        {
-                            MessageBox.Show("Yemek başarıyla güncellendi.");
-                            LoadData(); // Veritabanındaki veriyi güncelledikten sonra DataGridView'i güncelle
-                        }
-                    }
-                    catch (Exception ex)
+                    int rowsAffected = command.ExecuteNonQuery();
+                    if (rowsAffected > 0)
                     {
-                        MessageBox.Show("Hata: " + ex.Message);
+                        MessageBox.Show("Yemek başarıyla güncellendi.");
+                        LoadData(); // Veritabanındaki veriyi güncelledikten sonra DataGridView'i güncelle
                     }
                 }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Hata: " + ex.Message);
+                }
+                
             }
             else
             {
@@ -210,32 +203,37 @@ namespace RestoranOtomasyonSistemi
                 int selectedRowIndex = dataGridView1.SelectedRows[0].Index;
                 int yemekId = Convert.ToInt32(dataGridView1.Rows[selectedRowIndex].Cells["YemekID"].Value);
 
-                using (SqlConnection connection = new SqlConnection(connectionString))
-                {
-                    try
-                    {
-                        connection.Open();
-                        string query = "DELETE FROM Yemekler WHERE YemekID = @YemekID";
-                        SqlCommand command = new SqlCommand(query, connection);
-                        command.Parameters.AddWithValue("@YemekID", yemekId);
+                var connection = ServiceLocator.GetService<DataBaseService>().GetCurrentConnection();
 
-                        int rowsAffected = command.ExecuteNonQuery();
-                        if (rowsAffected > 0)
-                        {
-                            MessageBox.Show("Yemek başarıyla silindi.");
-                            LoadData(); // Veritabanından veri sildikten sonra DataGridView'i güncelle
-                        }
-                    }
-                    catch (Exception ex)
+                try
+                {
+                    string query = "DELETE FROM Yemekler WHERE YemekID = @YemekID";
+                    SqlCommand command = new SqlCommand(query, connection);
+                    command.Parameters.AddWithValue("@YemekID", yemekId);
+
+                    int rowsAffected = command.ExecuteNonQuery();
+                    if (rowsAffected > 0)
                     {
-                        MessageBox.Show("Hata: " + ex.Message);
+                        MessageBox.Show("Yemek başarıyla silindi.");
+                        LoadData(); // Veritabanından veri sildikten sonra DataGridView'i güncelle
                     }
                 }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Hata: " + ex.Message);
+                }
             }
-            else
-            {
-                MessageBox.Show("Lütfen silmek için bir yemek seçin.");
-            }
+
+        }
+
+        private void button1_Click_1(object sender, EventArgs e)
+        {
+            ServiceLocator.GetService<DataBaseService>().InitializeDatabase();
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            ServiceLocator.GetService<DataBaseService>().DropDatabase();
         }
     }
 }

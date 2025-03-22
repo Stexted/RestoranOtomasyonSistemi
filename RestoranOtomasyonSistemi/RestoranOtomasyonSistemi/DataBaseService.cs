@@ -8,10 +8,27 @@ using static RestoranOtomasyonSistemi.FoodOrderModule;
 
 namespace RestoranOtomasyonSistemi
 {
-    public class DataBaseService
+    public class DataBaseService : BaseService
     {
 
         private string connectionString = "Server=localhost\\SQLExpress; Database=TestDB; Integrated Security=True; Encrypt=False;";
+        private SqlConnection connection;
+
+        public override void InitializeService()
+        {
+            OpenSQLConnection();
+        }
+
+        public void OpenSQLConnection()
+        {
+            connection = new SqlConnection(connectionString);
+            connection.Open();
+        }
+
+        public void CloseSQLConnection()
+        {
+            connection.Close();
+        }
 
         public void InitializeDatabase() 
         {
@@ -25,72 +42,95 @@ namespace RestoranOtomasyonSistemi
             );";
 
 
-            using (SqlConnection connection = new SqlConnection(connectionString))
+
+            try
             {
-                try
+
+                using (SqlCommand command = new SqlCommand(createTableQuery, connection))
                 {
-                    connection.Open();
-
-                    using (SqlCommand command = new SqlCommand(createTableQuery, connection))
-                    {
-                        command.ExecuteNonQuery();  
-                        Console.WriteLine("Tablo başarıyla oluşturuldu.");
-                    }
-
-                    string insertQuery = @"
-                INSERT INTO Yemekler (YemekAdi, Fiyat, Stok)
-                VALUES 
-                    ('Köfte', 250.50, 100),
-                    ('Burger', 350.00, 50),
-                    ('Pizza', 300.00, 75),
-                    ('Çorba', 150.50, 200);";
-
-                    using (SqlCommand insertCommand = new SqlCommand(insertQuery, connection))
-                    {
-                        int rowsAffected = insertCommand.ExecuteNonQuery();
-                        Console.WriteLine($"{rowsAffected} satır başarıyla eklendi.");
-                    }
+                    command.ExecuteNonQuery();  
+                    Console.WriteLine("Tablo başarıyla oluşturuldu.");
                 }
-                catch (Exception ex)
+
+                string insertQuery = @"
+            INSERT INTO Yemekler (YemekAdi, Fiyat, Stok)
+            VALUES 
+                ('Köfte', 250.50, 100),
+                ('Burger', 350.00, 50),
+                ('Pizza', 300.00, 75),
+                ('Çorba', 150.50, 200);";
+
+                using (SqlCommand insertCommand = new SqlCommand(insertQuery, connection))
                 {
-                    Console.WriteLine("Hata: " + ex.Message);
+                    int rowsAffected = insertCommand.ExecuteNonQuery();
+                    Console.WriteLine($"{rowsAffected} satır başarıyla eklendi.");
                 }
             }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Hata: " + ex.Message);
+            }
+        }
+
+
+        public void DropDatabase()
+        {
+
+            try
+            {
+
+                // Veritabanını silmek için SQL komutunu yaz
+                string dropDatabaseQuery = "DROP DATABASE TestDB";  // Burada 'TestDB' yerine silmek istediğiniz veritabanı adını yazabilirsiniz
+
+                // SQL komutunu çalıştır
+                SqlCommand command = new SqlCommand(dropDatabaseQuery, connection);
+                command.ExecuteNonQuery();  // Komutu çalıştır
+                CloseSQLConnection();
+
+                // Başarılı olduğunu kullanıcıya bildir
+                MessageBox.Show("Veritabanı başarıyla silindi!");
+                
+            }
+    
+            catch (Exception ex)
+            {
+                // Hata durumunda kullanıcıya bildirim göster
+                MessageBox.Show("Veritabanı silinirken bir hata oluştu: " + ex.Message);
+            }
+
         }
 
         public void GetFoodInfo(string FoodName)
         {
-            using (SqlConnection connection = new SqlConnection(connectionString))
+            try
             {
-                try
+                connection.Open();
+
+                string query = "SELECT * FROM Yemekler WHERE YemekAdi = @FoodName";
+                using (SqlCommand command = new SqlCommand(query, connection))
                 {
-                    connection.Open();
+                    command.Parameters.AddWithValue("@FoodName", FoodName);
 
-                    string query = "SELECT * FROM Yemekler WHERE YemekAdi = @FoodName";
-                    using (SqlCommand command = new SqlCommand(query, connection))
+                    using (SqlDataReader reader = command.ExecuteReader())
                     {
-                        command.Parameters.AddWithValue("@FoodName", FoodName);
-
-                        using (SqlDataReader reader = command.ExecuteReader())
+                        if (reader.Read())
                         {
-                            if (reader.Read())
-                            {
 
-                                var foodInfo = new FoodInfo();
-                                foodInfo.FoodName = reader.GetString(1);
-                                foodInfo.FoodPrice = reader.GetDecimal(2);
+                            var foodInfo = new FoodInfo();
+                            foodInfo.FoodName = reader.GetString(1);
+                            foodInfo.FoodPrice = reader.GetDecimal(2);
 
-                                MessageBox.Show(foodInfo.FoodName + foodInfo.FoodPrice.ToString());
+                            MessageBox.Show(foodInfo.FoodName + foodInfo.FoodPrice.ToString());
 
-                            }
                         }
                     }
                 }
-                catch (Exception ex)
-                {
-                    Console.WriteLine("Hata: " + ex.Message);
-                }
             }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Hata: " + ex.Message);
+            }
+            
         }
 
 
@@ -98,37 +138,35 @@ namespace RestoranOtomasyonSistemi
         {
             var result = new List<FoodInfo>();
             string query = "SELECT YemekID, YemekAdi, Fiyat, Stok FROM Yemekler";
-            using (SqlConnection connection = new SqlConnection(connectionString))
+
+            try
             {
-                try
+                using (SqlCommand command = new SqlCommand(query, connection))
                 {
-                    connection.Open();
-                    using (SqlCommand command = new SqlCommand(query, connection))
+                    using (SqlDataReader reader = command.ExecuteReader())
                     {
-                        using (SqlDataReader reader = command.ExecuteReader())
+                        int yOffset = 20;
+                        while (reader.Read())
                         {
-                            int yOffset = 20;
-                            while (reader.Read())
-                            {
-                                int yemekID = reader.GetInt32(0);
+                            int yemekID = reader.GetInt32(0);
 
-                                string yemekAdi = reader.GetString(1);
-                                decimal fiyat = reader.GetDecimal(2);
-                                int stok = reader.GetInt32(3);
+                            string yemekAdi = reader.GetString(1);
+                            decimal fiyat = reader.GetDecimal(2);
+                            int stok = reader.GetInt32(3);
 
-                                result.Add(new FoodInfo { FoodID = yemekID, FoodName = yemekAdi, FoodPrice = fiyat, Stock = stok });
-                            }
+                            result.Add(new FoodInfo { FoodID = yemekID, FoodName = yemekAdi, FoodPrice = fiyat, Stock = stok });
                         }
                     }
+                }
 
-                    return result;
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show("Hata: " + ex.Message);
-                    return null;
-                }
+                return result;
             }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Hata: " + ex.Message);
+                return null;
+            }
+            
         }
 
         public void UpdateStock(int yemekID, int newStock)
@@ -156,5 +194,9 @@ namespace RestoranOtomasyonSistemi
             }
         }
 
+        public SqlConnection GetCurrentConnection()
+        {
+            return connection;
+        }
     }
 }

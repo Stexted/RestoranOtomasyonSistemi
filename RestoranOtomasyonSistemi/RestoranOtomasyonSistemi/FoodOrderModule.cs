@@ -4,9 +4,7 @@ namespace RestoranOtomasyonSistemi
 {
 
     public partial class FoodOrderModule : Form
-    {
-        private string connectionString = "Server=localhost\\SQLExpress; Database=TestDB; Integrated Security=True; Encrypt=False;";
-        
+    {        
         private DataBaseService databaseService;
         private List<Button> orderButtons = new List<Button>();
 
@@ -17,7 +15,7 @@ namespace RestoranOtomasyonSistemi
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            databaseService = new DataBaseService();
+            databaseService = ServiceLocator.GetService<DataBaseService>();
 
             UpdateMenu();
         }
