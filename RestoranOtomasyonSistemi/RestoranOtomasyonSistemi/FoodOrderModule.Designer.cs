@@ -109,10 +109,12 @@ namespace RestoranOtomasyonSistemi
             Controls.Add(dataGridView1);
             Controls.Add(button2);
             Controls.Add(button1);
-            FormBorderStyle = FormBorderStyle.FixedToolWindow;
+            FormBorderStyle = FormBorderStyle.FixedSingle;
             Name = "FoodOrderModule";
             ShowIcon = false;
+            StartPosition = FormStartPosition.CenterScreen;
             Text = "Sipariş Sistemi";
+            Activated += OnFormActivated;
             Load += Form1_Load;
             ((System.ComponentModel.ISupportInitialize)dataGridView1).EndInit();
             ResumeLayout(false);

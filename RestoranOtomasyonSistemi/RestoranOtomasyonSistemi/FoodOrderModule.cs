@@ -8,6 +8,7 @@ namespace RestoranOtomasyonSistemi
         private DataBaseService databaseService;
         private List<Button> orderButtons = new List<Button>();
         private BasketInfo basketInfo = new BasketInfo();
+
         public FoodOrderModule()
         {
             InitializeComponent();
@@ -15,17 +16,18 @@ namespace RestoranOtomasyonSistemi
             dataGridView1.AutoGenerateColumns = true;
             dataGridView1.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
             dataGridView1.AllowUserToAddRows = true;
+            databaseService = ServiceLocator.GetService<DataBaseService>();
+
         }
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            databaseService = ServiceLocator.GetService<DataBaseService>();
-
             UpdateMenu();
         }
 
         private void UpdateMenu()
         {
+
             var loadedFoods = databaseService.LoadFoods();
 
 
@@ -117,6 +119,11 @@ namespace RestoranOtomasyonSistemi
         private void label1_Click(object sender, EventArgs e)
         {
 
+        }
+
+        private void OnFormActivated(object sender, EventArgs e)
+        {
+            UpdateMenu();
         }
     }
 }
