@@ -1,6 +1,6 @@
 ﻿namespace RestoranOtomasyonSistemi
 {
-    partial class Form1
+    partial class FoodOrderModule
     {
         /// <summary>
         ///  Required designer variable.

@@ -1,0 +1,133 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using Microsoft.Data.SqlClient;
+using static RestoranOtomasyonSistemi.FoodOrderModule;
+
+namespace RestoranOtomasyonSistemi
+{
+    public class DataBaseService
+    {
+
+        private string connectionString = "Server=localhost\\SQLExpress; Database=TestDB; Integrated Security=True; Encrypt=False;";
+
+        public void InitializeDatabase() 
+        {
+            string createTableQuery = @"
+            CREATE TABLE Yemekler
+            (
+                YemekID INT IDENTITY(1,1) PRIMARY KEY,  
+                YemekAdi NVARCHAR(100),                 
+                Fiyat DECIMAL(10, 2),                    
+                Stok INT                               
+            );";
+
+
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                try
+                {
+                    connection.Open();
+
+                    using (SqlCommand command = new SqlCommand(createTableQuery, connection))
+                    {
+                        command.ExecuteNonQuery();  
+                        Console.WriteLine("Tablo başarıyla oluşturuldu.");
+                    }
+
+                    string insertQuery = @"
+                INSERT INTO Yemekler (YemekAdi, Fiyat, Stok)
+                VALUES 
+                    ('Köfte', 25.50, 100),
+                    ('Burger', 35.00, 50),
+                    ('Pizza', 30.00, 75),
+                    ('Çorba', 15.50, 200);";
+
+                    using (SqlCommand insertCommand = new SqlCommand(insertQuery, connection))
+                    {
+                        int rowsAffected = insertCommand.ExecuteNonQuery();
+                        Console.WriteLine($"{rowsAffected} satır başarıyla eklendi.");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Hata: " + ex.Message);
+                }
+            }
+        }
+
+        public void GetFoodInfo(string FoodName)
+        {
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                try
+                {
+                    connection.Open();
+
+                    string query = "SELECT * FROM Yemekler WHERE YemekAdi = @FoodName";
+                    using (SqlCommand command = new SqlCommand(query, connection))
+                    {
+                        command.Parameters.AddWithValue("@FoodName", FoodName);
+
+                        using (SqlDataReader reader = command.ExecuteReader())
+                        {
+                            if (reader.Read())
+                            {
+
+                                var foodInfo = new FoodInfo();
+                                foodInfo.FoodName = reader.GetString(1);
+                                foodInfo.FoodPrice = reader.GetDecimal(2);
+
+                                MessageBox.Show(foodInfo.FoodName + foodInfo.FoodPrice.ToString());
+
+                            }
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Hata: " + ex.Message);
+                }
+            }
+        }
+
+
+        public List<FoodInfo> LoadYemekler()
+        {
+            var result = new List<FoodInfo>();
+            string query = "SELECT YemekID, YemekAdi, Fiyat FROM Yemekler";
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                try
+                {
+                    connection.Open();
+                    using (SqlCommand command = new SqlCommand(query, connection))
+                    {
+                        using (SqlDataReader reader = command.ExecuteReader())
+                        {
+                            int yOffset = 20;
+                            while (reader.Read())
+                            {
+                                string yemekAdi = reader.GetString(1);
+                                decimal fiyat = reader.GetDecimal(2);
+                                int yemekID = reader.GetInt32(0);
+
+                                result.Add(new FoodInfo { FoodID = yemekID, FoodName = yemekAdi, FoodPrice = fiyat });
+                            }
+                        }
+                    }
+
+                    return result;
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Hata: " + ex.Message);
+                    return null;
+                }
+            }
+        }
+
+    }
+}
