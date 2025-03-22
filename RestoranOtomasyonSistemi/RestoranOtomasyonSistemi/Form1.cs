@@ -15,9 +15,16 @@ namespace RestoranOtomasyonSistemi
 
         }
 
-        private void button1_Click(object sender, EventArgs e)
-        {
 
+        public class FoodInfo
+        {
+            public string FoodName;
+            public decimal FoodPrice;
+
+        }
+
+        private void GetFoodInfo(string FoodName)
+        {
             string connectionString = "Server=localhost\\SQLExpress; Database=TestDB; Integrated Security=True; Encrypt=False;";
 
 
@@ -25,32 +32,39 @@ namespace RestoranOtomasyonSistemi
             {
                 try
                 {
-                    // Baðlantýyý aç
                     connection.Open();
 
-                    string query = "SELECT TOP 100 YemekID, YemekAdi, Fiyat, Stok FROM Yemekler";
-                    // SqlCommand nesnesi ile sorguyu çalýþtýr
+                    string query = "SELECT * FROM Yemekler WHERE YemekAdi = @FoodName";
                     using (SqlCommand command = new SqlCommand(query, connection))
                     {
+                        command.Parameters.AddWithValue("@FoodName", FoodName);
+
                         using (SqlDataReader reader = command.ExecuteReader())
                         {
-                            // Verileri okuyup ilk öðe için fiyatý TextBox'a yerleþtiriyoruz
                             if (reader.Read())
                             {
-                                // Ýlk öðenin fiyatýný alýyoruz
-                                decimal fiyat = reader.GetDecimal(2);  // Fiyat sütununu alýyoruz
-                                textBox1.Text = fiyat.ToString();
-                                // TextBox'a fiyatý yazýyoruz
+
+                                var foodInfo = new FoodInfo();
+                                foodInfo.FoodName = reader.GetString(1);
+                                foodInfo.FoodPrice = reader.GetDecimal(2);
+
+                                MessageBox.Show(foodInfo.FoodName + foodInfo.FoodPrice.ToString());
+
                             }
                         }
                     }
                 }
                 catch (Exception ex)
                 {
-                    // Hata durumunda mesajý göster
                     Console.WriteLine("Hata: " + ex.Message);
                 }
             }
+        }
+
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            GetFoodInfo("Pizza");
         }
     }
 }
