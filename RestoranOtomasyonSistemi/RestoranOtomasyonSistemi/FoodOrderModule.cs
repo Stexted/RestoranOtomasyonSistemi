@@ -22,7 +22,7 @@ namespace RestoranOtomasyonSistemi
 
         private void UpdateMenu()
         {
-            var loadedFoods = databaseService.LoadYemekler();
+            var loadedFoods = databaseService.LoadFoods();
 
 
             foreach (Control control in orderButtons)
@@ -66,7 +66,7 @@ namespace RestoranOtomasyonSistemi
         {
             Button clickedButton = (Button)sender;
             var tag = clickedButton.Tag as dynamic;
-            databaseService.UpdateStock(tag, 0);
+            databaseService.SellProduct(tag, 1);
 
             UpdateMenu();
             
@@ -78,7 +78,6 @@ namespace RestoranOtomasyonSistemi
             public string FoodName;
             public decimal FoodPrice;
             public int Stock;
-
         }
 
 

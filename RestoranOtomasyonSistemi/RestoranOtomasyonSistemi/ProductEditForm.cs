@@ -13,8 +13,11 @@ namespace RestoranOtomasyonSistemi
 {
     public partial class ProductEditForm : Form
     {
+        private DataBaseService dataBaseService;
+
         public ProductEditForm()
         {
+            dataBaseService = ServiceLocator.GetService<DataBaseService>();
             InitializeComponent();
         }
 
@@ -130,10 +133,12 @@ namespace RestoranOtomasyonSistemi
                 command.Parameters.AddWithValue("@Fiyat", fiyat);
                 command.Parameters.AddWithValue("@Stok", stok);
 
+
                 int rowsAffected = command.ExecuteNonQuery();
                 if (rowsAffected > 0)
                 {
                     MessageBox.Show("Yemek başarıyla eklendi.");
+                    dataBaseService.AddReportEntry("Ürün eklendi :" + yemekAdi + " Stok:" + stok);
                     LoadData();
                 }
             }
@@ -212,9 +217,13 @@ namespace RestoranOtomasyonSistemi
                     command.Parameters.AddWithValue("@YemekID", yemekId);
 
                     int rowsAffected = command.ExecuteNonQuery();
+
+
+
                     if (rowsAffected > 0)
                     {
                         MessageBox.Show("Yemek başarıyla silindi.");
+                        dataBaseService.AddReportEntry("Ürün silindi :" + yemekId);
                         LoadData(); // Veritabanından veri sildikten sonra DataGridView'i güncelle
                     }
                 }

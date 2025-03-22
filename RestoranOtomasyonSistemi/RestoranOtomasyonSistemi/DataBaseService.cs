@@ -17,6 +17,8 @@ namespace RestoranOtomasyonSistemi
         public override void InitializeService()
         {
             OpenSQLConnection();
+            CreateFoodsTableIfNotExists();
+            CreateReportTableIfNotExists();
         }
 
         public void OpenSQLConnection()
@@ -134,7 +136,7 @@ namespace RestoranOtomasyonSistemi
         }
 
 
-        public List<FoodInfo> LoadYemekler()
+        public List<FoodInfo> LoadFoods()
         {
             var result = new List<FoodInfo>();
             string query = "SELECT YemekID, YemekAdi, Fiyat, Stok FROM Yemekler";
@@ -166,7 +168,20 @@ namespace RestoranOtomasyonSistemi
                 MessageBox.Show("Hata: " + ex.Message);
                 return null;
             }
-            
+        }
+
+        public FoodInfo GetFoodInfoById(int foodId)
+        {
+            var foods = LoadFoods();
+            foreach (var food in foods)
+            {
+                if (food.FoodID == foodId)
+                {
+                    return food;
+                }
+            }
+
+            return null;
         }
 
         public void UpdateStock(int yemekID, int newStock)
@@ -184,9 +199,126 @@ namespace RestoranOtomasyonSistemi
                     command.ExecuteNonQuery();
                     connection.Close();
 
-                    // Güncel veriyi DataGridView'e yeniden yükleyelim
-                    LoadYemekler();
+                    LoadFoods();
                 }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Hata: {ex.Message}");
+            }
+        }
+
+        public bool SellProduct(int yemekID, int decreaseAmount)
+        {
+            try
+            {
+                // Yemeklerin mevcut stok bilgisini almak için sorgu yazıyoruz.
+                string querySelect = "SELECT Stok FROM Yemekler WHERE YemekID = @YemekID";
+
+ 
+                SqlCommand commandSelect = new SqlCommand(querySelect, connection);
+                commandSelect.Parameters.AddWithValue("@YemekID", yemekID);
+
+
+                // Mevcut stok değerini alıyoruz
+                int currentStock = (int)commandSelect.ExecuteScalar();
+
+                // Mevcut stoktan çıkarma işlemini yapıyoruz.
+                int newStock = currentStock - decreaseAmount;
+
+                // Eğer stok sıfırın altına düşüyorsa, bunu engellemek için kontrol ekliyoruz
+                if (newStock < 0)
+                {
+                    MessageBox.Show("Stok miktarı yetersiz.");
+                    return false;
+                }
+
+                // Yeni stok değeri ile güncelleme işlemi
+                string queryUpdate = "UPDATE Yemekler SET Stok = @Stok WHERE YemekID = @YemekID";
+                SqlCommand commandUpdate = new SqlCommand(queryUpdate, connection);
+                commandUpdate.Parameters.AddWithValue("@Stok", newStock);
+                commandUpdate.Parameters.AddWithValue("@YemekID", yemekID);
+
+                commandUpdate.ExecuteNonQuery();
+                var currentFood = GetFoodInfoById(yemekID);
+                AddReportEntry("Ürün satışı gerçekleşti: " + currentFood.FoodName + " Satılan Miktar :" + decreaseAmount);
+
+
+                // Stok güncelleme işlemi tamamlandıktan sonra listeyi yeniden yüklüyoruz
+                LoadFoods();
+                return false;
+                
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Hata: {ex.Message}");
+                return false;
+            }
+        }
+
+        public void AddReportEntry(string logText)
+        {
+            try
+            {
+                
+                string query = "INSERT INTO Rapor (LogLine, Time) VALUES (@LogLine, @Time)";
+                SqlCommand command = new SqlCommand(query, connection);
+                command.Parameters.AddWithValue("@LogLine", logText);
+                command.Parameters.AddWithValue("@Time", DateTime.Now);
+
+                command.ExecuteNonQuery();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Hata: " + ex.Message);
+            }
+        }
+
+        public void CreateFoodsTableIfNotExists()
+        {
+            try
+            {
+                string query = @"
+                IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'Yemekler')
+                BEGIN
+                    CREATE TABLE Yemekler
+                    (
+                        YemekID INT IDENTITY(1,1) PRIMARY KEY,    -- Otomatik artan birincil anahtar
+                        YemekAdi NVARCHAR(100),                     -- Yemek adı
+                        Fiyat DECIMAL(10, 2),                       -- Yemek fiyatı
+                        Stok INT                                    -- Yemek stoğu
+                    );
+                END";
+
+                SqlCommand command = new SqlCommand(query, connection);
+                command.ExecuteNonQuery();
+                
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Hata: {ex.Message}");
+            }
+        }
+
+
+        public void CreateReportTableIfNotExists()
+        {
+            try
+            {
+                string query = @"
+                IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'Rapor')
+                BEGIN
+                    CREATE TABLE Rapor
+                    (
+                        RaporID INT IDENTITY(1,1) PRIMARY KEY,  
+                        LogLine NVARCHAR(255),                    
+                        Time DATETIME                        
+                    );
+                END";
+
+                    SqlCommand command = new SqlCommand(query, connection);
+                    command.ExecuteNonQuery();
+
             }
             catch (Exception ex)
             {
