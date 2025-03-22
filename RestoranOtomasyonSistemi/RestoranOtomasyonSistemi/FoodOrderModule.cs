@@ -4,10 +4,10 @@ namespace RestoranOtomasyonSistemi
 {
 
     public partial class FoodOrderModule : Form
-    {        
+    {
         private DataBaseService databaseService;
         private List<Button> orderButtons = new List<Button>();
-
+        private BasketInfo basketInfo = new BasketInfo();
         public FoodOrderModule()
         {
             InitializeComponent();
@@ -52,7 +52,7 @@ namespace RestoranOtomasyonSistemi
                         orderButton.Tag = food.FoodID;
                         orderButton.Location = new Point(20, yOffset);
                         orderButton.Size = new Size(200, 40);
-                        orderButton.Click += OrderFood;
+                        orderButton.Click += AddFoodToBasket;
 
                         this.Controls.Add(orderButton);
 
@@ -62,14 +62,27 @@ namespace RestoranOtomasyonSistemi
             }
         }
 
-        private void OrderFood(object? sender, EventArgs e)
+        private void button2_Click(object sender, EventArgs e)
+        {
+            CompleteOrder();
+        }
+
+        private void AddFoodToBasket(object? sender, EventArgs e)
         {
             Button clickedButton = (Button)sender;
             var tag = clickedButton.Tag as dynamic;
-            databaseService.SellProduct(tag, 1);
+            basketInfo.AddToBasket(tag);
 
+
+        }
+
+        private void CompleteOrder()
+        {
+            foreach (var foodId in basketInfo.ReadyToOrderFoods)
+            {
+                databaseService.SellProduct(foodId, 1);
+            }
             UpdateMenu();
-            
         }
 
         public class FoodInfo
@@ -80,10 +93,15 @@ namespace RestoranOtomasyonSistemi
             public int Stock;
         }
 
+        public class BasketInfo
+        {
+            public List<int> ReadyToOrderFoods = new List<int>();
 
-  
+            public void AddToBasket(int foodID)
+            { ReadyToOrderFoods.Add(foodID); }
 
 
+        }
 
     }
-}
+    }
