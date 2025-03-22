@@ -40,10 +40,10 @@ namespace RestoranOtomasyonSistemi
                     string insertQuery = @"
                 INSERT INTO Yemekler (YemekAdi, Fiyat, Stok)
                 VALUES 
-                    ('Köfte', 25.50, 100),
-                    ('Burger', 35.00, 50),
-                    ('Pizza', 30.00, 75),
-                    ('Çorba', 15.50, 200);";
+                    ('Köfte', 250.50, 100),
+                    ('Burger', 350.00, 50),
+                    ('Pizza', 300.00, 75),
+                    ('Çorba', 150.50, 200);";
 
                     using (SqlCommand insertCommand = new SqlCommand(insertQuery, connection))
                     {

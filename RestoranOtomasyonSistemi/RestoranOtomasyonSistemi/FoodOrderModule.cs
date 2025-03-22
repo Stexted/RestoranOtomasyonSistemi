@@ -24,7 +24,7 @@ namespace RestoranOtomasyonSistemi
 
             if (loadedFoods != null)
             {
-                var yOffset = 0;
+                var yOffset = 5;
                 foreach (var food in loadedFoods)
                 {
                     Button orderButton = new Button();
@@ -51,9 +51,9 @@ namespace RestoranOtomasyonSistemi
         }
 
 
-        private void button1_Click(object sender, EventArgs e)
-        {
-            databaseService.GetFoodInfo("Pizza");
-        }
+  
+
+
+
     }
 }

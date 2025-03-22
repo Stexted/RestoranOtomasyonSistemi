@@ -1,4 +1,6 @@
-﻿namespace RestoranOtomasyonSistemi
+﻿
+
+namespace RestoranOtomasyonSistemi
 {
     partial class FoodOrderModule
     {
@@ -29,43 +31,41 @@
         private void InitializeComponent()
         {
             button1 = new Button();
-            textBox1 = new TextBox();
             SuspendLayout();
             // 
             // button1
             // 
-            button1.Location = new Point(599, 352);
+            button1.Location = new Point(641, 404);
             button1.Name = "button1";
-            button1.Size = new Size(75, 23);
+            button1.Size = new Size(126, 23);
             button1.TabIndex = 0;
-            button1.Text = "button1";
+            button1.Text = "Personel Girişi";
             button1.UseVisualStyleBackColor = true;
             button1.Click += button1_Click;
             // 
-            // textBox1
-            // 
-            textBox1.Location = new Point(359, 113);
-            textBox1.Name = "textBox1";
-            textBox1.Size = new Size(147, 23);
-            textBox1.TabIndex = 1;
-            // 
-            // Form1
+            // FoodOrderModule
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(800, 450);
-            Controls.Add(textBox1);
             Controls.Add(button1);
-            Name = "Form1";
-            Text = "Form1";
+            Name = "FoodOrderModule";
+            Text = "Sipariş Sistemi";
             Load += Form1_Load;
             ResumeLayout(false);
-            PerformLayout();
         }
 
-        #endregion
+        private void button1_Click(object sender, EventArgs e)
+        {
+            //databaseService.InitializeDatabase();
+
+
+            ProductEditForm productEditForm = new ProductEditForm();
+            productEditForm.Show();
+        }
 
         private Button button1;
-        private TextBox textBox1;
     }
 }
+
+#endregion
