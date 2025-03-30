@@ -18,7 +18,7 @@ namespace RestoranOtomasyonSistemi
         {
             OpenSQLConnection();
             CreateFoodsTableIfNotExists();
-            CreateReportTableIfNotExists();
+            CreateReportTableIgfxgfxfgfNotExists();
         }
 
         public void OpenSQLConnection()
