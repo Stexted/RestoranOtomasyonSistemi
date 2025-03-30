@@ -123,9 +123,10 @@ namespace RestoranOtomasyonSistemi
 
         private void button1_Click(object sender, EventArgs e)
         {
-            ProductEditForm productEditForm = new ProductEditForm();
-            productEditForm.Show();
+            LoginForm loginForm = new LoginForm();
+            loginForm.ShowDialog(); 
         }
+
 
         private Button button1;
         private Button button2;
