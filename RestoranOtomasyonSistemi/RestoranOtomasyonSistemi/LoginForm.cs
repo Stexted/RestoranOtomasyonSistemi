@@ -15,7 +15,7 @@ namespace RestoranOtomasyonSistemi
             string username = txtUsername.Text;
             string password = txtPassword.Text;
 
-            if ( (username == "admin" && password == "1234") || (username == "personel1" && password == "1234")) 
+            if (username == "admin" && password == "1234") 
             {
                 this.Hide(); 
                 ProductEditForm productEditForm = new ProductEditForm(); 
