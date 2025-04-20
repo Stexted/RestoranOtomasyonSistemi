@@ -80,8 +80,6 @@ namespace RestoranOtomasyonSistemi
 
             try
             {
-
-             
                 string dropDatabaseQuery = "DROP DATABASE TestDB";  
 
              
@@ -206,7 +204,7 @@ namespace RestoranOtomasyonSistemi
             }
         }
 
-        public bool SellProduct(FoodInfo foodInfo, int decreaseAmount)
+        public bool SellProduct(FoodInfo foodInfo, int decreaseAmount, int tableId, int personelId)
         {
             try
             {
@@ -233,7 +231,7 @@ namespace RestoranOtomasyonSistemi
                 commandUpdate.Parameters.AddWithValue("@YemekID", foodInfo.FoodID);
 
                 commandUpdate.ExecuteNonQuery();
-                AddReportEntry("Ürün satışı gerçekleşti: " + foodInfo.FoodName + " Satılan Miktar :" + decreaseAmount);
+                AddReportEntry("Ürün satışı gerçekleşti: " + foodInfo.FoodName + " Satılan Miktar: " + decreaseAmount + " PersonelId: " + personelId + " MasaId: " + tableId);
 
                 LoadFoods();
                 return false;
@@ -250,7 +248,6 @@ namespace RestoranOtomasyonSistemi
         {
             try
             {
-                
                 string query = "INSERT INTO Rapor (LogLine, Time) VALUES (@LogLine, @Time)";
                 SqlCommand command = new SqlCommand(query, connection);
                 command.Parameters.AddWithValue("@LogLine", logText);

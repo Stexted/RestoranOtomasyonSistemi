@@ -8,8 +8,11 @@ namespace RestoranOtomasyonSistemi
         private DataBaseService databaseService;
         private List<Button> orderButtons = new List<Button>();
         private BasketInfo basketInfo = new BasketInfo();
+        private int tableId = 0;
+        private int personelId = 0;
 
-        public FoodOrderModule()
+
+        public FoodOrderModule(int selectedTableId, int personelId)
         {
             InitializeComponent();
             UpdateTotalAmountOfBasket();
@@ -17,8 +20,13 @@ namespace RestoranOtomasyonSistemi
             dataGridView1.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
             dataGridView1.AllowUserToAddRows = true;
             databaseService = ServiceLocator.GetService<DataBaseService>();
-
+            this.tableId = selectedTableId;
+            this.personelId = personelId;
+            this.FormClosed += (s, e) => { Application.Exit(); };
+            Text = $"Sipariþ Modülü - Masa: {selectedTableId}";
         }
+
+
 
         private void Form1_Load(object sender, EventArgs e)
         {
@@ -89,7 +97,7 @@ namespace RestoranOtomasyonSistemi
         {
             foreach (var foodId in basketInfo.ReadyToOrderFoods)
             {
-                databaseService.SellProduct(foodId, 1);
+                databaseService.SellProduct(foodId, 1, tableId, personelId);
             }
 
             dataGridView1.DataSource = null;

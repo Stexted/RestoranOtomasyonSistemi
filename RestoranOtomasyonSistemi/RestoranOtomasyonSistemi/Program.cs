@@ -13,7 +13,7 @@ namespace RestoranOtomasyonSistemi
             ApplicationConfiguration.Initialize();
             ServiceLocator.Initialize();
             ServiceLocator.AddService(new DataBaseService());
-            Application.Run(new FoodOrderModule());
+            Application.Run(new LoginForm());
             
         }
     }
