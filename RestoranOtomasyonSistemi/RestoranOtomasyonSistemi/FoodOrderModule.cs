@@ -8,6 +8,9 @@ namespace RestoranOtomasyonSistemi
         private DataBaseService databaseService;
         private List<Button> orderButtons = new List<Button>();
         private BasketInfo basketInfo = new BasketInfo();
+
+        private BasketInfo totalBasketInfo = new BasketInfo();
+
         private int tableId = 0;
         private int personelId = 0;
         private readonly MasaTakipModule masaTakipModule;
@@ -76,6 +79,17 @@ namespace RestoranOtomasyonSistemi
 
         private void button2_Click(object sender, EventArgs e)
         {
+            if(databaseService.GetTableStatus(tableId) == MasaDurumu.Bos)
+            {
+                MessageBox.Show("Masa boþ, sipariþ veremezsiniz.");
+                return;
+            }
+            else if (basketInfo.ReadyToOrderFoods.Count == 0)
+            {
+                MessageBox.Show("Sepetinizde ürün yok.");
+                return;
+            }
+
             CompleteOrder();
         }
 
@@ -96,6 +110,7 @@ namespace RestoranOtomasyonSistemi
             foreach (var foodId in basketInfo.ReadyToOrderFoods)
             {
                 databaseService.SellProduct(foodId, 1, tableId, personelId);
+                totalBasketInfo.AddToBasket(foodId.FoodID);
             }
 
             dataGridView1.DataSource = null;
@@ -140,8 +155,17 @@ namespace RestoranOtomasyonSistemi
 
         private void button4_Click(object sender, EventArgs e)
         {
-            databaseService.SetTableStatus(tableId, MasaDurumu.Bos);
-            masaTakipModule.UpdateTableStatus();
+
+            if(totalBasketInfo.GetTotalAmount() == 0)
+            {
+                databaseService.SetTableStatus(tableId, MasaDurumu.Bos);
+                masaTakipModule.UpdateTableStatus();
+                MessageBox.Show("Ödeme yapýlacak ürün yok.");
+                return;
+            }
+
+
+            new PaymentModule(totalBasketInfo, masaTakipModule, tableId).Show();
         }
     }
 }
