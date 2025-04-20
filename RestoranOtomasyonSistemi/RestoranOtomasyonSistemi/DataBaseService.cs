@@ -10,17 +10,33 @@ namespace RestoranOtomasyonSistemi
 {
     public class DataBaseService : BaseService
     {
-
-        private string connectionString = "Server=SINAN\\SQLEXPRESS; Database=TestDB; Integrated Security=True; Encrypt=False;";
-        private string connectionString = "Server=localhost\\SQLEXPRESS; Database=TestDB; Integrated Security=True; Encrypt=False;";
+        private const string DefaultConnectionString = "Server=localhost\\SQLEXPRESS; Database=TestDB; Integrated Security=True; Encrypt=False;";
+        private string connectionString = DefaultConnectionString;
         private SqlConnection connection;
 
         public override void InitializeService()
         {
+            CheckConfigurationFile();
             OpenSQLConnection();
             CreateFoodsTableIfNotExists();
             CreateReportTableIfNotExists();
         }
+
+        public void CheckConfigurationFile()
+        {
+            string configFilePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "config.txt");
+
+            if (File.Exists(configFilePath))
+            {
+                connectionString = File.ReadAllText(configFilePath).Trim();
+            }
+            else
+            {
+                connectionString = DefaultConnectionString;
+                File.WriteAllText(configFilePath, connectionString);
+            }
+        }
+
 
         public void OpenSQLConnection()
         {
