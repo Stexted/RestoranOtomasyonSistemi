@@ -107,6 +107,7 @@
             Controls.Add(masa5);
             Name = "MasaTakipModule";
             Text = "MasaTakipModule";
+            Load += MasaTakipModule_Load;
             ResumeLayout(false);
         }
 

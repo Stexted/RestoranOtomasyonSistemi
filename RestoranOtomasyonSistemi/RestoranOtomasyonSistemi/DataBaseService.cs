@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.Data.SqlClient;
-using static RestoranOtomasyonSistemi.FoodOrderModule;
+﻿using Microsoft.Data.SqlClient;
 
 namespace RestoranOtomasyonSistemi
 {
@@ -322,6 +316,96 @@ namespace RestoranOtomasyonSistemi
             catch (Exception ex)
             {
                 MessageBox.Show($"Hata: {ex.Message}");
+            }
+        }
+
+        public void CreateTablesTableIfNotExists()
+        {
+            string queryCreateTable = @"
+        IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'Masalar')
+        BEGIN
+            CREATE TABLE Masalar
+            (
+                MasaID INT PRIMARY KEY IDENTITY(1,1),
+                Durum NVARCHAR(10) NOT NULL
+            );
+
+            INSERT INTO Masalar (Durum)
+            VALUES ('Bos'), ('Bos'), ('Bos'), ('Bos'), ('Bos')
+        END";
+
+            try
+            {
+                SqlCommand command = new SqlCommand(queryCreateTable, connection);
+                command.ExecuteNonQuery();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Tablo oluşturulurken hata oluştu: " + ex.Message);
+            }
+
+        }
+
+
+        public MasaDurumu GetTableStatus(int tableId)
+        {
+            CreateTablesTableIfNotExists();
+            string query = "SELECT Durum FROM Masalar WHERE MasaID = @MasaID";
+
+            try
+            {
+                SqlCommand command = new SqlCommand(query, connection);
+                command.Parameters.AddWithValue("@MasaID", tableId);
+
+                SqlDataReader reader = command.ExecuteReader();
+                if (reader.Read())
+                {
+                    string durumStr = reader["Durum"].ToString();
+                    reader.Close();
+                    return (MasaDurumu)Enum.Parse(typeof(MasaDurumu), durumStr);
+                }
+                reader.Close();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Durum okunurken hata oluştu: " + ex.Message);
+            }
+
+            return MasaDurumu.Bos;
+        }
+
+
+        public void SetTableStatus(int tableId, MasaDurumu status)
+        {
+            CreateTablesTableIfNotExists();
+            string queryCheck = "SELECT COUNT(*) FROM Masalar WHERE MasaID = @MasaID";
+            string queryInsert = "INSERT INTO Masalar (MasaID, Durum) VALUES (@MasaID, @Durum)";
+            string queryUpdate = "UPDATE Masalar SET Durum = @Durum WHERE MasaID = @MasaID";
+
+            try
+            {
+                SqlCommand checkCmd = new SqlCommand(queryCheck, connection);
+                checkCmd.Parameters.AddWithValue("@MasaID", tableId);
+                int count = (int)checkCmd.ExecuteScalar();
+
+                if (count > 0)
+                {
+                    SqlCommand updateCmd = new SqlCommand(queryUpdate, connection);
+                    updateCmd.Parameters.AddWithValue("@MasaID", tableId);
+                    updateCmd.Parameters.AddWithValue("@Durum", status.ToString());
+                    updateCmd.ExecuteNonQuery();
+                }
+                else
+                {
+                    SqlCommand insertCmd = new SqlCommand(queryInsert, connection);
+                    insertCmd.Parameters.AddWithValue("@MasaID", tableId);
+                    insertCmd.Parameters.AddWithValue("@Durum", status.ToString());
+                    insertCmd.ExecuteNonQuery();
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Masa durumu ayarlanırken hata oluştu: " + ex.Message);
             }
         }
 

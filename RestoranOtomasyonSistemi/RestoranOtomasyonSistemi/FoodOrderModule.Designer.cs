@@ -35,6 +35,8 @@ namespace RestoranOtomasyonSistemi
             button3 = new Button();
             textBox1 = new TextBox();
             label1 = new Label();
+            button1 = new Button();
+            button4 = new Button();
             ((System.ComponentModel.ISupportInitialize)dataGridView1).BeginInit();
             SuspendLayout();
             // 
@@ -87,11 +89,35 @@ namespace RestoranOtomasyonSistemi
             label1.Text = "Toplam Tutar :";
             label1.Click += label1_Click;
             // 
+            // button1
+            // 
+            button1.BackColor = Color.Orange;
+            button1.Location = new Point(27, 368);
+            button1.Name = "button1";
+            button1.Size = new Size(124, 47);
+            button1.TabIndex = 6;
+            button1.Text = "Müşteri Oturdu";
+            button1.UseVisualStyleBackColor = false;
+            button1.Click += button1_Click;
+            // 
+            // button4
+            // 
+            button4.BackColor = Color.GreenYellow;
+            button4.Location = new Point(157, 368);
+            button4.Name = "button4";
+            button4.Size = new Size(124, 47);
+            button4.TabIndex = 7;
+            button4.Text = "Müşteri Kalktı";
+            button4.UseVisualStyleBackColor = false;
+            button4.Click += button4_Click;
+            // 
             // FoodOrderModule
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(951, 450);
+            Controls.Add(button4);
+            Controls.Add(button1);
             Controls.Add(label1);
             Controls.Add(textBox1);
             Controls.Add(button3);
@@ -113,6 +139,8 @@ namespace RestoranOtomasyonSistemi
         private Button button3;
         private TextBox textBox1;
         private Label label1;
+        private Button button1;
+        private Button button4;
     }
 }
 

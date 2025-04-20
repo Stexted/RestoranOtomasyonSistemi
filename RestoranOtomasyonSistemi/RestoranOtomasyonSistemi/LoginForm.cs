@@ -10,6 +10,8 @@ namespace RestoranOtomasyonSistemi
             InitializeComponent();
             this.AcceptButton = btnLogin;
 
+            txtPassword.Text = "1234";
+            txtUsername.Text = "personel1";
             return;
             ReportingForm a1;
             a1 = new ReportingForm();

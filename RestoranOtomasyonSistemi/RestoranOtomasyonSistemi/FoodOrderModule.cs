@@ -10,9 +10,9 @@ namespace RestoranOtomasyonSistemi
         private BasketInfo basketInfo = new BasketInfo();
         private int tableId = 0;
         private int personelId = 0;
+        private readonly MasaTakipModule masaTakipModule;
 
-
-        public FoodOrderModule(int selectedTableId, int personelId)
+        public FoodOrderModule(int selectedTableId, int personelId, MasaTakipModule masaTakipModule)
         {
             InitializeComponent();
             UpdateTotalAmountOfBasket();
@@ -22,10 +22,9 @@ namespace RestoranOtomasyonSistemi
             databaseService = ServiceLocator.GetService<DataBaseService>();
             this.tableId = selectedTableId;
             this.personelId = personelId;
+            this.masaTakipModule = masaTakipModule;
             Text = $"Sipariþ Modülü - Masa: {selectedTableId}";
         }
-
-
 
         private void Form1_Load(object sender, EventArgs e)
         {
@@ -131,6 +130,18 @@ namespace RestoranOtomasyonSistemi
         private void OnFormActivated(object sender, EventArgs e)
         {
             UpdateMenu();
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            databaseService.SetTableStatus(tableId, MasaDurumu.Dolu);
+            masaTakipModule.UpdateTableStatus();
+        }
+
+        private void button4_Click(object sender, EventArgs e)
+        {
+            databaseService.SetTableStatus(tableId, MasaDurumu.Bos);
+            masaTakipModule.UpdateTableStatus();
         }
     }
 }
