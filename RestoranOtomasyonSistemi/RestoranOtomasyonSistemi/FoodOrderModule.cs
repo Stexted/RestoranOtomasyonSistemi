@@ -22,7 +22,6 @@ namespace RestoranOtomasyonSistemi
             databaseService = ServiceLocator.GetService<DataBaseService>();
             this.tableId = selectedTableId;
             this.personelId = personelId;
-            this.FormClosed += (s, e) => { Application.Exit(); };
             Text = $"Sipariþ Modülü - Masa: {selectedTableId}";
         }
 

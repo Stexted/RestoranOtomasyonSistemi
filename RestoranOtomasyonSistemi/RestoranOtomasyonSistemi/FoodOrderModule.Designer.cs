@@ -97,7 +97,6 @@ namespace RestoranOtomasyonSistemi
             Controls.Add(button3);
             Controls.Add(dataGridView1);
             Controls.Add(button2);
-            FormBorderStyle = FormBorderStyle.FixedSingle;
             Name = "FoodOrderModule";
             ShowIcon = false;
             StartPosition = FormStartPosition.CenterScreen;

@@ -26,18 +26,21 @@ namespace RestoranOtomasyonSistemi
             if (username == "admin" && password == "1234")
             {
                 AdminPanel adminPanel = new AdminPanel();
+                adminPanel.FormClosed += (s, e) => { this.Show(); };
                 adminPanel.Show();
                 this.Hide();
             }
             else if (username == "personel1" && password == "1234")
             {
                 MasaTakipModule masaTakipModule = new MasaTakipModule(1);
+                masaTakipModule.FormClosed += (s, e) => { this.Show(); };
                 masaTakipModule.Show();
                 this.Hide();
             }
             else if (username == "personel2" && password == "1234")
             {
                 MasaTakipModule masaTakipModule = new MasaTakipModule(2);
+                masaTakipModule.FormClosed += (s, e) => { this.Show(); };
                 masaTakipModule.Show();
                 this.Hide();
             }
