@@ -8,13 +8,13 @@ namespace RestoranOtomasyonSistemi
         public LoginForm()
         {
             InitializeComponent();
+            this.AcceptButton = btnLogin;
 
-            /*
-            MasaTakipModule a = new MasaTakipModule(5);
-            a.Show();
+            return;
+            ReportingForm a1;
+            a1 = new ReportingForm();
+            a1.Show();
             this.Hide();
-            */
-
         }
 
         private void btnLogin_Click(object sender, EventArgs e)
@@ -25,8 +25,8 @@ namespace RestoranOtomasyonSistemi
 
             if (username == "admin" && password == "1234")
             {
-                ProductEditForm productEditForm = new ProductEditForm();
-                productEditForm.Show();
+                AdminPanel adminPanel = new AdminPanel();
+                adminPanel.Show();
                 this.Hide();
             }
             else if (username == "personel1" && password == "1234")

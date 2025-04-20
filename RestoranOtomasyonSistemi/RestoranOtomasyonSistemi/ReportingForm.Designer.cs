@@ -1,19 +1,11 @@
 ﻿namespace RestoranOtomasyonSistemi
 {
-    partial class ProductEditForm
+    partial class ReportingForm
     {
         /// <summary>
         /// Required designer variable.
         /// </summary>
         private System.ComponentModel.IContainer components = null;
-
-        private DataGridView dataGridView1;
-        private TextBox txtYemekAdi;
-        private TextBox txtFiyat;
-        private TextBox txtStok;
-        private Button btnEkle;
-        private Button btnDuzenle;
-        private Button btnSil;
 
         /// <summary>
         /// Clean up any resources being used.
@@ -28,11 +20,6 @@
             base.Dispose(disposing);
         }
 
-
-
-
-
-
         #region Windows Form Designer generated code
 
         /// <summary>
@@ -43,14 +30,13 @@
         {
             SuspendLayout();
             // 
-            // ProductEditForm
+            // ReportingForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(1113, 670);
-            Name = "ProductEditForm";
-            Text = "ProductEditForm";
-            Load += ProductEditForm_Load;
+            ClientSize = new Size(1328, 751);
+            Name = "ReportingForm";
+            Text = "ReportingForm";
             ResumeLayout(false);
         }
 

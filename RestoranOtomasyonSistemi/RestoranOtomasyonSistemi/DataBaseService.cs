@@ -12,6 +12,7 @@ namespace RestoranOtomasyonSistemi
     {
 
         private string connectionString = "Server=SINAN\\SQLEXPRESS; Database=TestDB; Integrated Security=True; Encrypt=False;";
+        private string connectionString = "Server=localhost\\SQLEXPRESS; Database=TestDB; Integrated Security=True; Encrypt=False;";
         private SqlConnection connection;
 
         public override void InitializeService()
@@ -231,7 +232,7 @@ namespace RestoranOtomasyonSistemi
                 commandUpdate.Parameters.AddWithValue("@YemekID", foodInfo.FoodID);
 
                 commandUpdate.ExecuteNonQuery();
-                AddReportEntry("Ürün satışı gerçekleşti: " + foodInfo.FoodName + " Satılan Miktar: " + decreaseAmount + " PersonelId: " + personelId + " MasaId: " + tableId);
+                AddReportEntry("Ürün satışı gerçekleşti: " + foodInfo.FoodName +" Satış Tutarı: " + foodInfo.FoodPrice +" Satılan Miktar: " + decreaseAmount + " PersonelId: " + personelId + " MasaId: " + tableId);
 
                 LoadFoods();
                 return false;
@@ -254,6 +255,27 @@ namespace RestoranOtomasyonSistemi
                 command.Parameters.AddWithValue("@Time", DateTime.Now);
 
                 command.ExecuteNonQuery();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Hata: " + ex.Message);
+            }
+        }
+
+
+        public void GetReportEtries()
+        {
+            try
+            {
+                string query = "SELECT * FROM Rapor";
+                SqlCommand command = new SqlCommand(query, connection);
+                SqlDataReader reader = command.ExecuteReader();
+                while (reader.Read())
+                {
+                    string logLine = reader["LogLine"].ToString();
+                    DateTime time = Convert.ToDateTime(reader["Time"]);
+                    Console.WriteLine($"Log: {logLine}, Time: {time}");
+                }
             }
             catch (Exception ex)
             {

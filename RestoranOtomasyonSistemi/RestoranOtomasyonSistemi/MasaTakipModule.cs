@@ -13,6 +13,7 @@ namespace RestoranOtomasyonSistemi
     public partial class MasaTakipModule : Form
     {
         private int personelId = 0;
+
         public MasaTakipModule(int personelId)
         {
             InitializeComponent();
@@ -21,31 +22,37 @@ namespace RestoranOtomasyonSistemi
 
         private void masa1_Click(object sender, EventArgs e)
         {
+            DeactivateTable(sender);
             new FoodOrderModule(1, personelId).Show();
-            this.Close();
         }
 
         private void masa2_Click(object sender, EventArgs e)
         {
+            DeactivateTable(sender);
             new FoodOrderModule(2, personelId).Show();
-            this.Close();
         }
 
         private void masa3_Click(object sender, EventArgs e)
         {
+            DeactivateTable(sender);
             new FoodOrderModule(3, personelId).Show();
-            this.Close();
         }
         private void masa4_Click(object sender, EventArgs e)
         {
+            DeactivateTable(sender);
             new FoodOrderModule(4, personelId).Show();
-            this.Close();
         }
 
         private void masa5_Click(object sender, EventArgs e)
         {
+            DeactivateTable(sender);
             new FoodOrderModule(5, personelId).Show();
-            this.Close();
+        }
+
+        private void DeactivateTable(object sender) 
+        {
+            ((Button)sender).Enabled = false;
+            ((Button)sender).BackColor = Color.Red;
         }
     }
 }

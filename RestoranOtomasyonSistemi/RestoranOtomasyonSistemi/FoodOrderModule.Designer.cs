@@ -30,7 +30,6 @@ namespace RestoranOtomasyonSistemi
         /// </summary>
         private void InitializeComponent()
         {
-            button1 = new Button();
             button2 = new Button();
             dataGridView1 = new DataGridView();
             button3 = new Button();
@@ -38,16 +37,6 @@ namespace RestoranOtomasyonSistemi
             label1 = new Label();
             ((System.ComponentModel.ISupportInitialize)dataGridView1).BeginInit();
             SuspendLayout();
-            // 
-            // button1
-            // 
-            button1.Location = new Point(12, 424);
-            button1.Name = "button1";
-            button1.Size = new Size(101, 23);
-            button1.TabIndex = 0;
-            button1.Text = "Personel Girişi";
-            button1.UseVisualStyleBackColor = true;
-            button1.Click += button1_Click;
             // 
             // button2
             // 
@@ -108,7 +97,6 @@ namespace RestoranOtomasyonSistemi
             Controls.Add(button3);
             Controls.Add(dataGridView1);
             Controls.Add(button2);
-            Controls.Add(button1);
             FormBorderStyle = FormBorderStyle.FixedSingle;
             Name = "FoodOrderModule";
             ShowIcon = false;
@@ -121,14 +109,6 @@ namespace RestoranOtomasyonSistemi
             PerformLayout();
         }
 
-        private void button1_Click(object sender, EventArgs e)
-        {
-            LoginForm loginForm = new LoginForm();
-            loginForm.ShowDialog(); 
-        }
-
-
-        private Button button1;
         private Button button2;
         private DataGridView dataGridView1;
         private Button button3;
