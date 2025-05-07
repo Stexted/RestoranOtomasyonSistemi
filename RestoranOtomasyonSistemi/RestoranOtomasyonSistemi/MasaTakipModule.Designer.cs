@@ -39,7 +39,7 @@
             // 
             masa5.BackColor = Color.GreenYellow;
             masa5.Font = new Font("Segoe UI", 14F);
-            masa5.Location = new Point(392, 372);
+            masa5.Location = new Point(245, 12);
             masa5.Name = "masa5";
             masa5.Size = new Size(210, 105);
             masa5.TabIndex = 0;
@@ -51,7 +51,7 @@
             // 
             masa3.BackColor = Color.GreenYellow;
             masa3.Font = new Font("Segoe UI", 14F);
-            masa3.Location = new Point(149, 233);
+            masa3.Location = new Point(12, 234);
             masa3.Name = "masa3";
             masa3.Size = new Size(210, 105);
             masa3.TabIndex = 1;
@@ -63,7 +63,7 @@
             // 
             masa4.BackColor = Color.GreenYellow;
             masa4.Font = new Font("Segoe UI", 14F);
-            masa4.Location = new Point(627, 233);
+            masa4.Location = new Point(12, 345);
             masa4.Name = "masa4";
             masa4.Size = new Size(210, 105);
             masa4.TabIndex = 2;
@@ -75,7 +75,7 @@
             // 
             masa1.BackColor = Color.GreenYellow;
             masa1.Font = new Font("Segoe UI", 14F);
-            masa1.Location = new Point(251, 76);
+            masa1.Location = new Point(12, 12);
             masa1.Name = "masa1";
             masa1.Size = new Size(210, 105);
             masa1.TabIndex = 3;
@@ -87,7 +87,7 @@
             // 
             masa2.BackColor = Color.GreenYellow;
             masa2.Font = new Font("Segoe UI", 14F);
-            masa2.Location = new Point(530, 76);
+            masa2.Location = new Point(12, 123);
             masa2.Name = "masa2";
             masa2.Size = new Size(210, 105);
             masa2.TabIndex = 4;

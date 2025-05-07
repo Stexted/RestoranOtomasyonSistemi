@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using RestoranOtomasyonSistemi;
 
 namespace RestoranOtomasyonSistemi
 {
@@ -32,5 +33,35 @@ namespace RestoranOtomasyonSistemi
             reportingForm.FormClosed += (s, args) => this.Show();
             this.Hide();
         }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            StockReportForm stockReportForm = new StockReportForm();
+            stockReportForm.Show();
+            stockReportForm.FormClosed += (s, args) => this.Show();
+            this.Hide();
+        }
+
+        private void button4_Click(object sender, EventArgs e)
+        {
+            PersonelEkleForm personelEkleForm = new PersonelEkleForm();
+            personelEkleForm.Show();
+            personelEkleForm.FormClosed += (s, args) => this.Show();
+            this.Hide();
+        }
+
+        private void button6_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void button5_Click(object sender, EventArgs e)
+        {
+            MasaYonetimForm masaYonetimForm = new MasaYonetimForm();
+            masaYonetimForm.Show();
+            masaYonetimForm.FormClosed += (s, args) => this.Show();
+            this.Hide();
+        }
     }
 }
+

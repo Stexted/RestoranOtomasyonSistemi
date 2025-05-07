@@ -14,6 +14,7 @@ namespace RestoranOtomasyonSistemi
             OpenSQLConnection();
             CreateFoodsTableIfNotExists();
             CreateReportTableIfNotExists();
+            CreatePersonelTableIfNotExists();
         }
 
         public void CheckConfigurationFile()
@@ -408,6 +409,36 @@ namespace RestoranOtomasyonSistemi
                 MessageBox.Show("Masa durumu ayarlanırken hata oluştu: " + ex.Message);
             }
         }
+        public void AddNewTable()
+        {
+            string query = "INSERT INTO Masalar (Durum) VALUES ('Bos')";
+            SqlCommand command = new SqlCommand(query, connection);
+            command.ExecuteNonQuery();
+        }
+
+        public void DeleteTable(int masaId)
+        {
+            string query = "DELETE FROM Masalar WHERE MasaID = @MasaID";
+            SqlCommand command = new SqlCommand(query, connection);
+            command.Parameters.AddWithValue("@MasaID", masaId);
+            command.ExecuteNonQuery();
+        }
+
+        public List<(int MasaID, string Durum)> GetAllTables()
+        {
+            List<(int, string)> tables = new List<(int, string)>();
+            string query = "SELECT MasaID, Durum FROM Masalar";
+            SqlCommand command = new SqlCommand(query, connection);
+            using (SqlDataReader reader = command.ExecuteReader())
+            {
+                while (reader.Read())
+                {
+                    tables.Add((reader.GetInt32(0), reader.GetString(1)));
+                }
+            }
+            return tables;
+        }
+
 
 
         public void CreateReportTableIfNotExists()
@@ -432,6 +463,50 @@ namespace RestoranOtomasyonSistemi
             catch (Exception ex)
             {
                 MessageBox.Show($"Hata: {ex.Message}");
+            }
+        }
+
+        public void CreatePersonelTableIfNotExists()
+        {
+            string query = @"
+    IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'Personeller')
+    BEGIN
+        CREATE TABLE Personeller
+        (
+            PersonelID INT IDENTITY(1,1) PRIMARY KEY,    -- Otomatik artan birincil anahtar
+            KullaniciAdi NVARCHAR(50) NOT NULL,           -- Personel kullanıcı adı
+            Sifre NVARCHAR(50) NOT NULL,                  -- Personel şifresi
+            Tarih DATETIME DEFAULT GETDATE()              -- Personel kayıt tarihi
+        );
+    END";
+
+            try
+            {
+                SqlCommand command = new SqlCommand(query, connection);
+                command.ExecuteNonQuery();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Hata: {ex.Message}");
+            }
+        }
+        public void AddPersonel(string kullaniciAdi, string sifre)
+        {
+            try
+            {
+                string query = "INSERT INTO Personeller (KullaniciAdi, Sifre) VALUES (@KullaniciAdi, @Sifre)";
+                using (SqlCommand command = new SqlCommand(query, connection))
+                {
+                    command.Parameters.AddWithValue("@KullaniciAdi", kullaniciAdi);
+                    command.Parameters.AddWithValue("@Sifre", sifre);
+
+                    int rowsAffected = command.ExecuteNonQuery();
+                    MessageBox.Show($"{rowsAffected} personel başarıyla eklendi.", "Başarılı", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Hata: " + ex.Message);
             }
         }
 
