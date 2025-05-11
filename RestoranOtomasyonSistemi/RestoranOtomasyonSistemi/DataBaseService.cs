@@ -15,6 +15,7 @@ namespace RestoranOtomasyonSistemi
             CreateFoodsTableIfNotExists();
             CreateReportTableIfNotExists();
             CreatePersonelTableIfNotExists();
+            CreateTablesTableIfNotExists();
         }
 
         public void CheckConfigurationFile()
@@ -411,9 +412,21 @@ namespace RestoranOtomasyonSistemi
         }
         public void AddNewTable()
         {
-            string query = "INSERT INTO Masalar (Durum) VALUES ('Bos')";
-            SqlCommand command = new SqlCommand(query, connection);
-            command.ExecuteNonQuery();
+            // Mevcut masa sayısını al
+            var index = GetAllTables().Count();
+
+            // DBCC CHECKIDENT komutunu oluştur
+            string reseedQuery = "DBCC CHECKIDENT ('Masalar', RESEED, @Index)";
+            SqlCommand reseedCommand = new SqlCommand(reseedQuery, connection);
+            reseedCommand.Parameters.AddWithValue("@Index", index);
+
+            // DBCC CHECKIDENT komutunu çalıştır
+            reseedCommand.ExecuteNonQuery();
+
+            // Yeni masa ekle
+            string insertQuery = "INSERT INTO Masalar (Durum) VALUES ('Bos')";
+            SqlCommand insertCommand = new SqlCommand(insertQuery, connection);
+            insertCommand.ExecuteNonQuery();
         }
 
         public void DeleteTable(int masaId)
@@ -447,6 +460,28 @@ namespace RestoranOtomasyonSistemi
                 }
             }
             return tables;
+        }
+
+        public bool TryPersonelLogin(string username, string password, out int personelId)
+        {
+            string query = "SELECT * FROM Personeller WHERE KullaniciAdi = @KullaniciAdi AND Sifre = @Sifre";
+            SqlCommand command = new SqlCommand(query, connection);
+            command.Parameters.AddWithValue("@KullaniciAdi", username);
+            command.Parameters.AddWithValue("@Sifre", password);
+            SqlDataReader reader = command.ExecuteReader();
+            if (reader.Read())
+            {
+                int PersonelId = reader.GetInt32(0);
+                reader.Close();
+                personelId = PersonelId;
+                return true;
+            }
+            else
+            {
+                reader.Close();
+                personelId = -1;
+                return false;
+            }
         }
 
 
@@ -500,18 +535,39 @@ namespace RestoranOtomasyonSistemi
                 MessageBox.Show($"Hata: {ex.Message}");
             }
         }
+
         public void AddPersonel(string kullaniciAdi, string sifre)
         {
             try
             {
+                string checkQuery = "SELECT COUNT(1) FROM Personeller WHERE KullaniciAdi = @KullaniciAdi";
+                using (SqlCommand checkCommand = new SqlCommand(checkQuery, connection))
+                {
+                    checkCommand.Parameters.AddWithValue("@KullaniciAdi", kullaniciAdi);
+                    int userExists = (int)checkCommand.ExecuteScalar();
+
+                    if (userExists > 0)
+                    {
+                        MessageBox.Show("Bu kullanıcı adı zaten mevcut. Lütfen farklı bir kullanıcı adı giriniz.", "Kullanıcı Adı Mevcut", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        return;
+                    }
+                }
+
                 string query = "INSERT INTO Personeller (KullaniciAdi, Sifre) VALUES (@KullaniciAdi, @Sifre)";
                 using (SqlCommand command = new SqlCommand(query, connection))
                 {
                     command.Parameters.AddWithValue("@KullaniciAdi", kullaniciAdi);
                     command.Parameters.AddWithValue("@Sifre", sifre);
+                    int result = command.ExecuteNonQuery();
 
-                    int rowsAffected = command.ExecuteNonQuery();
-                    MessageBox.Show($"{rowsAffected} personel başarıyla eklendi.", "Başarılı", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    if (result > 0)
+                    {
+                        MessageBox.Show("Personel başarıyla eklendi.", "Başarılı", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    }
+                    else
+                    {
+                        MessageBox.Show("Personel eklenirken bir hata oluştu.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
                 }
             }
             catch (Exception ex)

@@ -16,9 +16,7 @@
         private void InitializeComponent()
         {
             this.SuspendLayout();
-            // 
-            // StockReportForm
-            // 
+                         
             this.ClientSize = new System.Drawing.Size(800, 600);
             this.Name = "StockReportForm";
             this.Load += new System.EventHandler(this.StockReportForm_Load);

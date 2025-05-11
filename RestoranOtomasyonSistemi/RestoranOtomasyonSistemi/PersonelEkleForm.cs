@@ -6,8 +6,6 @@ namespace RestoranOtomasyonSistemi
 {
     public partial class PersonelEkleForm : Form
     {
-        private const string connectionString = "Server=localhost\\SQLEXPRESS; Database=TestDB; Integrated Security=True; Encrypt=False;";
-
         public PersonelEkleForm()
         {
             InitializeComponent();
@@ -18,6 +16,8 @@ namespace RestoranOtomasyonSistemi
             string username = txtUsername.Text;
             string password = txtPassword.Text;
 
+            var databaseService = ServiceLocator.GetService<DataBaseService>();
+
             if (string.IsNullOrWhiteSpace(username) || string.IsNullOrWhiteSpace(password))
             {
                 MessageBox.Show("Lütfen tüm alanları doldurun.", "Eksik Bilgi", MessageBoxButtons.OK, MessageBoxIcon.Warning);
@@ -26,30 +26,7 @@ namespace RestoranOtomasyonSistemi
 
             try
             {
-                using (SqlConnection connection = new SqlConnection(connectionString))
-                {
-                    connection.Open();
-           
-                    string query = "INSERT INTO Personeller (KullaniciAdi, Sifre) VALUES (@KullaniciAdi, @Sifre)";
-
-                    using (SqlCommand command = new SqlCommand(query, connection))
-                    {
-                        command.Parameters.AddWithValue("@KullaniciAdi", username);
-                        command.Parameters.AddWithValue("@Sifre", password);
-
-                        int result = command.ExecuteNonQuery();
-
-                        if (result > 0)
-                        {
-                            MessageBox.Show("Personel başarıyla eklendi.", "Başarılı", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                            this.Close();
-                        }
-                        else
-                        {
-                            MessageBox.Show("Personel eklenirken bir hata oluştu.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        }
-                    }
-                }
+                databaseService.AddPersonel(username, password);
             }
             catch (Exception ex)
             {

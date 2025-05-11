@@ -38,6 +38,12 @@ namespace RestoranOtomasyonSistemi
         private void btnMasaSil_Click(object sender, EventArgs e)
         {
             var masalar = dbService.GetAllTables();
+            if(masalar.Count == 0)
+            {
+                MessageBox.Show("Silinecek masa yok.");
+                return;
+            }
+
             var tableToDelete = masalar[masalar.Count - 1];
             var result = MessageBox.Show($"Masa {tableToDelete.MasaID} silinsin mi?", "Onay", MessageBoxButtons.YesNo);
             if (result == DialogResult.Yes)

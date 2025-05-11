@@ -116,9 +116,35 @@ namespace RestoranOtomasyonSistemi
         
         private void btnEkle_Click(object sender, EventArgs e)
         {
+            if(txtFiyat.Text == "" || txtStok.Text == "" || txtYemekAdi.Text == "")
+            {
+                MessageBox.Show("Lütfen tüm alanları doldurun.");
+                return;
+            }
+
             string yemekAdi = txtYemekAdi.Text;
-            decimal fiyat = Convert.ToDecimal(txtFiyat.Text);
-            int stok = Convert.ToInt32(txtStok.Text);
+            decimal fiyat = 0;
+            int stok = 0;
+
+            try
+            {
+                fiyat = Convert.ToDecimal(txtFiyat.Text);
+            }
+            catch (FormatException)
+            {
+                MessageBox.Show("Fiyat alanı geçersiz bir formatta. Lütfen sayısal bir değer girin.");
+                return;
+            }
+
+            try
+            {
+                stok = Convert.ToInt32(txtStok.Text);
+            }
+            catch (FormatException)
+            {
+                MessageBox.Show("Stok alanı geçersiz bir formatta. Lütfen sayısal bir değer girin.");
+                return;
+            }
 
             var connection = ServiceLocator.GetService<DataBaseService>().GetCurrentConnection();
 

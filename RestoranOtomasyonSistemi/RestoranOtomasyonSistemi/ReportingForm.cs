@@ -103,6 +103,8 @@ namespace RestoranOtomasyonSistemi
                 query += " AND LogLine LIKE @PersonelFilter";
             }
 
+            query += " AND LogLine LIKE '%Ürün Satışı%'";
+
             var connection = dataBaseService.GetCurrentConnection();
             SqlCommand command = new SqlCommand(query, connection);
 
