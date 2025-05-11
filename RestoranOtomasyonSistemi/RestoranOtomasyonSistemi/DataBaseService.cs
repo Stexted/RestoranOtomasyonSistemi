@@ -423,17 +423,27 @@ namespace RestoranOtomasyonSistemi
             command.Parameters.AddWithValue("@MasaID", masaId);
             command.ExecuteNonQuery();
         }
-
-        public List<(int MasaID, string Durum)> GetAllTables()
+        
+        public List<(int MasaID, MasaDurumu Durum)> GetAllTables()
         {
-            List<(int, string)> tables = new List<(int, string)>();
+            List<(int, MasaDurumu)> tables = new List<(int, MasaDurumu)>();
             string query = "SELECT MasaID, Durum FROM Masalar";
             SqlCommand command = new SqlCommand(query, connection);
             using (SqlDataReader reader = command.ExecuteReader())
             {
                 while (reader.Read())
                 {
-                    tables.Add((reader.GetInt32(0), reader.GetString(1)));
+                    int masaID = reader.GetInt32(0);
+                    string durumStr = reader.GetString(1);
+
+                    if (Enum.TryParse<MasaDurumu>(durumStr, true, out MasaDurumu durum))
+                    {
+                        tables.Add((masaID, durum));
+                    }
+                    else
+                    {
+                        tables.Add((masaID, MasaDurumu.Bos));
+                    }
                 }
             }
             return tables;

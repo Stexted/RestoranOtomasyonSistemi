@@ -56,7 +56,7 @@ namespace RestoranOtomasyonSistemi
         private void button1_Click(object sender, EventArgs e)
         {
             databaseService.SetTableStatus(tableId, MasaDurumu.Bos);
-            masaTakipModule.UpdateTableStatus();
+            masaTakipModule.UpdateMasalar();
             Close();
         }
     }

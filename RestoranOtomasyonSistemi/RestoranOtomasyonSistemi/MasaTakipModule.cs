@@ -25,51 +25,93 @@ namespace RestoranOtomasyonSistemi
         {
             InitializeComponent();
             databaseService = ServiceLocator.GetService<DataBaseService>();
-            UpdateTableStatus();
             this.personelId = personelId;
-        }
-
-        public void UpdateTableStatus()
-        {
-            masa1.BackColor = databaseService.GetTableStatus(1) == MasaDurumu.Bos ? Color.LightGreen : Color.Red;
-
-            masa2.BackColor = databaseService.GetTableStatus(2) == MasaDurumu.Bos ? Color.LightGreen : Color.Red;
-
-            masa3.BackColor = databaseService.GetTableStatus(3) == MasaDurumu.Bos ? Color.LightGreen : Color.Red;
-
-            masa4.BackColor = databaseService.GetTableStatus(4) == MasaDurumu.Bos ? Color.LightGreen : Color.Red;
-
-            masa5.BackColor = databaseService.GetTableStatus(5) == MasaDurumu.Bos ? Color.LightGreen : Color.Red;
-        }
-
-        private void masa1_Click(object sender, EventArgs e)
-        {
-            new FoodOrderModule(1, personelId, this).Show();
-        }
-
-        private void masa2_Click(object sender, EventArgs e)
-        {
-            new FoodOrderModule(2, personelId, this).Show();
-        }
-
-        private void masa3_Click(object sender, EventArgs e)
-        {
-            new FoodOrderModule(3, personelId, this).Show();
-        }
-        private void masa4_Click(object sender, EventArgs e)
-        {
-            new FoodOrderModule(4, personelId, this).Show();
-        }
-
-        private void masa5_Click(object sender, EventArgs e)
-        {
-            new FoodOrderModule(5, personelId, this).Show();
+            LoadMasalar();
         }
 
 
         private void MasaTakipModule_Load(object sender, EventArgs e)
         {
 
+        }
+
+        private void Masa_Click(object sender, EventArgs e)
+        {
+            Button btn = sender as Button;
+            int masaID = (int)btn.Tag;
+
+            new FoodOrderModule(masaID, personelId, this).Show();
+        }
+
+        public void UpdateMasalar()
+        {
+            List<(int MasaID, MasaDurumu Durum)> masalar = databaseService.GetAllTables();
+            GetMasaButtons().ForEach(button =>
+            {
+                int masaID = (int)button.Tag;
+                var masa = masalar.FirstOrDefault(m => m.MasaID == masaID);
+                if (masa != default)
+                {
+                    button.BackColor = masa.Durum == MasaDurumu.Bos ? Color.GreenYellow : Color.Red;
+                }
+            });
+        }
+
+        private List<Button> GetMasaButtons()
+        {
+            List<Button> buttons = new List<Button>();
+            foreach (Control control in this.Controls)
+            {
+                if (control is Button && control.Name.StartsWith("masa"))
+                {
+                    buttons.Add((Button)control);
+                }
+            }
+            return buttons;
+        }
+
+        private void LoadMasalar()
+        {
+            List<(int MasaID, MasaDurumu Durum)> masalar = databaseService.GetAllTables(); 
+
+            int x = 20, y = 20;
+            int buttonWidth = 150, buttonHeight = 80;
+            int margin = 20;
+            int columnCount = 3;
+
+            int counter = 0;
+
+            foreach (var masa in masalar)
+            {
+                Button btn = new Button();
+                btn.Name = $"masa{masa.MasaID}";
+                btn.Text = $"Masa {masa.MasaID}";
+                btn.Size = new Size(buttonWidth, buttonHeight);
+                btn.Font = new Font("Segoe UI", 12);
+                btn.Tag = masa.MasaID;
+
+                switch (masa.Durum)
+                {
+                    case MasaDurumu.Bos:
+                        btn.BackColor = Color.GreenYellow;
+                        break;
+                    case MasaDurumu.Dolu:
+                        btn.BackColor = Color.Red;
+                        break;
+                    default:
+                        btn.BackColor = Color.GreenYellow;
+                        break;
+                }
+
+                btn.Location = new Point(x + (counter % columnCount) * (buttonWidth + margin),
+                                         y + (counter / columnCount) * (buttonHeight + margin));
+
+                btn.Click += Masa_Click;
+
+                this.Controls.Add(btn);
+
+                counter++;
+            }
         }
     }
 }

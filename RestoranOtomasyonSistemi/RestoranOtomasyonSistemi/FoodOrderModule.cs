@@ -150,7 +150,7 @@ namespace RestoranOtomasyonSistemi
         private void button1_Click(object sender, EventArgs e)
         {
             databaseService.SetTableStatus(tableId, MasaDurumu.Dolu);
-            masaTakipModule.UpdateTableStatus();
+            masaTakipModule.UpdateMasalar();
         }
 
         private void button4_Click(object sender, EventArgs e)
@@ -159,7 +159,7 @@ namespace RestoranOtomasyonSistemi
             if(totalBasketInfo.GetTotalAmount() == 0)
             {
                 databaseService.SetTableStatus(tableId, MasaDurumu.Bos);
-                masaTakipModule.UpdateTableStatus();
+                masaTakipModule.UpdateMasalar();
                 MessageBox.Show("Ödeme yapýlacak ürün yok.");
                 return;
             }
