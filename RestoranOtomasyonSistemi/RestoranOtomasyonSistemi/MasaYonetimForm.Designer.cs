@@ -43,7 +43,7 @@
             btnMasaSil.Name = "btnMasaSil";
             btnMasaSil.Size = new Size(120, 40);
             btnMasaSil.TabIndex = 2;
-            btnMasaSil.Text = "Seçili Masayı Sil";
+            btnMasaSil.Text = "Masa Sil";
             btnMasaSil.UseVisualStyleBackColor = true;
             btnMasaSil.Click += btnMasaSil_Click;
             // 

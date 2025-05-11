@@ -22,7 +22,7 @@ namespace RestoranOtomasyonSistemi
         private void ListeyiYenile()
         {
             lstMasalar.Items.Clear();
-            var masalar = dbService.GetAllTables(); // (int, string) listesi
+            var masalar = dbService.GetAllTables();
             foreach (var masa in masalar)
             {
                 lstMasalar.Items.Add($"Masa {masa.MasaID} - Durum: {masa.Durum}");
@@ -37,19 +37,12 @@ namespace RestoranOtomasyonSistemi
 
         private void btnMasaSil_Click(object sender, EventArgs e)
         {
-            if (lstMasalar.SelectedIndex == -1)
-            {
-                MessageBox.Show("Lütfen silinecek masayı seçin.");
-                return;
-            }
-
-            string secilen = lstMasalar.SelectedItem.ToString(); // Örn: "Masa 6 - Durum: Bos"
-            int masaId = int.Parse(secilen.Split(' ')[1]);
-
-            var result = MessageBox.Show($"Masa {masaId} silinsin mi?", "Onay", MessageBoxButtons.YesNo);
+            var masalar = dbService.GetAllTables();
+            var tableToDelete = masalar[masalar.Count - 1];
+            var result = MessageBox.Show($"Masa {tableToDelete.MasaID} silinsin mi?", "Onay", MessageBoxButtons.YesNo);
             if (result == DialogResult.Yes)
             {
-                dbService.DeleteTable(masaId);
+                dbService.DeleteTable(tableToDelete.MasaID);
                 ListeyiYenile();
             }
         }
