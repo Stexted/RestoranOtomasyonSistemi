@@ -14,4 +14,5 @@ namespace RestoranOtomasyonSistemi
         public decimal Fiyat { get; set; }
 
     }
+
 }

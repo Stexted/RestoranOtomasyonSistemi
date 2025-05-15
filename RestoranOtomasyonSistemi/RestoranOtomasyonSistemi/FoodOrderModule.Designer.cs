@@ -30,6 +30,7 @@ namespace RestoranOtomasyonSistemi
         /// </summary>
         private void InitializeComponent()
         {
+            components = new System.ComponentModel.Container();
             button2 = new Button();
             dataGridView1 = new DataGridView();
             button3 = new Button();
@@ -37,6 +38,9 @@ namespace RestoranOtomasyonSistemi
             label1 = new Label();
             button1 = new Button();
             button4 = new Button();
+            label2 = new Label();
+            timer1 = new System.Windows.Forms.Timer(components);
+            label3 = new Label();
             ((System.ComponentModel.ISupportInitialize)dataGridView1).BeginInit();
             SuspendLayout();
             // 
@@ -111,11 +115,42 @@ namespace RestoranOtomasyonSistemi
             button4.UseVisualStyleBackColor = false;
             button4.Click += button4_Click;
             // 
+            // label2
+            // 
+            label2.AutoSize = true;
+            label2.Font = new Font("Segoe UI", 12F, FontStyle.Bold, GraphicsUnit.Point, 162);
+            label2.Location = new Point(669, 444);
+            label2.Name = "label2";
+            label2.Size = new Size(170, 21);
+            label2.TabIndex = 8;
+            label2.Text = "Masa Oturma Süresi :";
+            label2.TextAlign = ContentAlignment.MiddleRight;
+            label2.Click += label2_Click;
+            // 
+            // timer1
+            // 
+            timer1.Enabled = true;
+            timer1.Interval = 1000;
+            timer1.Tick += timer1_Tick;
+            // 
+            // label3
+            // 
+            label3.AutoSize = true;
+            label3.Font = new Font("Segoe UI", 12F, FontStyle.Bold, GraphicsUnit.Point, 162);
+            label3.Location = new Point(860, 444);
+            label3.Name = "label3";
+            label3.Size = new Size(66, 21);
+            label3.TabIndex = 9;
+            label3.Text = "ss:dd:ss";
+            label3.TextAlign = ContentAlignment.MiddleRight;
+            // 
             // FoodOrderModule
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(951, 450);
+            ClientSize = new Size(951, 474);
+            Controls.Add(label3);
+            Controls.Add(label2);
             Controls.Add(button4);
             Controls.Add(button1);
             Controls.Add(label1);
@@ -141,6 +176,9 @@ namespace RestoranOtomasyonSistemi
         private Label label1;
         private Button button1;
         private Button button4;
+        private Label label2;
+        private System.Windows.Forms.Timer timer1;
+        private Label label3;
     }
 }
 

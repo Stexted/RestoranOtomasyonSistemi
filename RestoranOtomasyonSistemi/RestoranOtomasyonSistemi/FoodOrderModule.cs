@@ -27,6 +27,7 @@ namespace RestoranOtomasyonSistemi
             this.personelId = personelId;
             this.masaTakipModule = masaTakipModule;
             Text = $"Sipariþ Modülü - Masa: {selectedTableId}";
+            UpdateTimer();
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -79,7 +80,7 @@ namespace RestoranOtomasyonSistemi
 
         private void button2_Click(object sender, EventArgs e)
         {
-            if(databaseService.GetTableStatus(tableId) == MasaDurumu.Bos)
+            if (databaseService.GetTableStatus(tableId) == MasaDurumu.Bos)
             {
                 MessageBox.Show("Masa boþ, sipariþ veremezsiniz.");
                 return;
@@ -149,16 +150,16 @@ namespace RestoranOtomasyonSistemi
 
         private void button1_Click(object sender, EventArgs e)
         {
-            databaseService.SetTableStatus(tableId, MasaDurumu.Dolu);
+            databaseService.SetTableStatus(tableId, MasaDurumu.Dolu, DateTime.Now);
             masaTakipModule.UpdateMasalar();
         }
 
         private void button4_Click(object sender, EventArgs e)
         {
 
-            if(totalBasketInfo.GetTotalAmount() == 0)
+            if (totalBasketInfo.GetTotalAmount() == 0)
             {
-                databaseService.SetTableStatus(tableId, MasaDurumu.Bos);
+                databaseService.SetTableStatus(tableId, MasaDurumu.Bos, DateTime.Now);
                 masaTakipModule.UpdateMasalar();
                 MessageBox.Show("Ödeme yapýlacak ürün yok.");
                 return;
@@ -166,6 +167,33 @@ namespace RestoranOtomasyonSistemi
 
 
             new PaymentModule(totalBasketInfo, masaTakipModule, tableId).Show();
+        }
+
+        private void label2_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void timer1_Tick(object sender, EventArgs e)
+        {
+            UpdateTimer();
+        }
+
+        private void UpdateTimer()
+        {
+            DateTime? occupyTime = databaseService.GetMasaOccupyTime(tableId);
+
+            if (occupyTime.HasValue && databaseService.GetTableStatus(tableId).Equals(MasaDurumu.Dolu))
+            {
+                TimeSpan elapsed = DateTime.Now - occupyTime.Value;
+                label3.Text = elapsed.ToString(@"hh\:mm\:ss");
+                label3.ForeColor = Color.Blue;
+            }
+            else
+            {
+                label3.ForeColor = Color.Green;
+                label3.Text = "Boþ";
+            }
         }
     }
 }

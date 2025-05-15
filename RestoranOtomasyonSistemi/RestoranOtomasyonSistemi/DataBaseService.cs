@@ -332,17 +332,23 @@ namespace RestoranOtomasyonSistemi
         public void CreateTablesTableIfNotExists()
         {
             string queryCreateTable = @"
-        IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'Masalar')
-        BEGIN
-            CREATE TABLE Masalar
-            (
-                MasaID INT PRIMARY KEY IDENTITY(1,1),
-                Durum NVARCHAR(10) NOT NULL
-            );
+            IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'Masalar')
+            BEGIN
+                CREATE TABLE Masalar
+                (
+                    MasaID INT PRIMARY KEY IDENTITY(1,1),
+                    Durum NVARCHAR(10) NOT NULL,
+                    OccupyTime DATETIME NULL
+                );
 
-            INSERT INTO Masalar (Durum)
-            VALUES ('Bos'), ('Bos'), ('Bos'), ('Bos'), ('Bos')
-        END";
+                INSERT INTO Masalar (Durum, OccupyTime)
+                VALUES 
+                    ('Bos', NULL),
+                    ('Bos', NULL),
+                    ('Bos', NULL),
+                    ('Bos', NULL),
+                    ('Bos', NULL)
+            END";
 
             try
             {
@@ -385,12 +391,13 @@ namespace RestoranOtomasyonSistemi
         }
 
 
-        public void SetTableStatus(int tableId, MasaDurumu status)
+        public void SetTableStatus(int tableId, MasaDurumu status, DateTime occupyTime)
         {
             CreateTablesTableIfNotExists();
+
             string queryCheck = "SELECT COUNT(*) FROM Masalar WHERE MasaID = @MasaID";
-            string queryInsert = "INSERT INTO Masalar (MasaID, Durum) VALUES (@MasaID, @Durum)";
-            string queryUpdate = "UPDATE Masalar SET Durum = @Durum WHERE MasaID = @MasaID";
+            string queryInsert = "INSERT INTO Masalar (MasaID, Durum, OccupyTime) VALUES (@MasaID, @Durum, @OccupyTime)";
+            string queryUpdate = "UPDATE Masalar SET Durum = @Durum, OccupyTime = @OccupyTime WHERE MasaID = @MasaID";
 
             try
             {
@@ -403,6 +410,7 @@ namespace RestoranOtomasyonSistemi
                     SqlCommand updateCmd = new SqlCommand(queryUpdate, connection);
                     updateCmd.Parameters.AddWithValue("@MasaID", tableId);
                     updateCmd.Parameters.AddWithValue("@Durum", status.ToString());
+                    updateCmd.Parameters.AddWithValue("@OccupyTime", occupyTime);
                     updateCmd.ExecuteNonQuery();
                 }
                 else
@@ -410,6 +418,7 @@ namespace RestoranOtomasyonSistemi
                     SqlCommand insertCmd = new SqlCommand(queryInsert, connection);
                     insertCmd.Parameters.AddWithValue("@MasaID", tableId);
                     insertCmd.Parameters.AddWithValue("@Durum", status.ToString());
+                    insertCmd.Parameters.AddWithValue("@OccupyTime", occupyTime);
                     insertCmd.ExecuteNonQuery();
                 }
             }
@@ -418,6 +427,7 @@ namespace RestoranOtomasyonSistemi
                 MessageBox.Show("Masa durumu ayarlanırken hata oluştu: " + ex.Message);
             }
         }
+
         public void AddNewTable()
         {
             // Mevcut masa sayısını al
@@ -589,5 +599,20 @@ namespace RestoranOtomasyonSistemi
         {
             return connection;
         }
+
+        public DateTime? GetMasaOccupyTime(int masaId)
+        {
+            string query = "SELECT OccupyTime FROM Masalar WHERE MasaID = @MasaID";
+            SqlCommand cmd = new SqlCommand(query, connection);
+            cmd.Parameters.AddWithValue("@MasaID", masaId);
+
+            object result = cmd.ExecuteScalar();
+            if (result != null && result != DBNull.Value)
+            {
+                return Convert.ToDateTime(result);
+            }
+            return null;
+        }
+
     }
 }

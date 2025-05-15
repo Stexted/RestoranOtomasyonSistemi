@@ -27,6 +27,7 @@ namespace RestoranOtomasyonSistemi
             databaseService = ServiceLocator.GetService<DataBaseService>();
             this.personelId = personelId;
             LoadMasalar();
+            UpdateMasaTimers();
         }
 
 
@@ -72,7 +73,7 @@ namespace RestoranOtomasyonSistemi
 
         private void LoadMasalar()
         {
-            List<(int MasaID, MasaDurumu Durum)> masalar = databaseService.GetAllTables(); 
+            List<(int MasaID, MasaDurumu Durum)> masalar = databaseService.GetAllTables();
 
             int x = 20, y = 20;
             int buttonWidth = 150, buttonHeight = 80;
@@ -111,6 +112,32 @@ namespace RestoranOtomasyonSistemi
                 this.Controls.Add(btn);
 
                 counter++;
+            }
+        }
+
+        private void timer1_Tick(object sender, EventArgs e)
+        {
+            UpdateMasaTimers();
+        }
+
+        private void UpdateMasaTimers()
+        {
+            List<(int MasaID, MasaDurumu Durum)> masalar = databaseService.GetAllTables();
+
+            foreach (var masaButton in GetMasaButtons())
+            {
+                int masaId = (int)masaButton.Tag;
+                DateTime? occupyTime = databaseService.GetMasaOccupyTime(masaId);
+
+                string sureText = "Boş";
+
+                if (occupyTime.HasValue && databaseService.GetTableStatus(masaId).Equals(MasaDurumu.Dolu))
+                {
+                    TimeSpan elapsed = DateTime.Now - occupyTime.Value;
+                    sureText = elapsed.ToString(@"hh\:mm\:ss");
+                }
+
+                masaButton.Text = $"Masa {masaId}\n{sureText}";
             }
         }
     }
