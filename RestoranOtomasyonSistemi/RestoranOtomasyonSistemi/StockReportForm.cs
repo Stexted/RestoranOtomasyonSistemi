@@ -111,7 +111,7 @@ namespace RestoranOtomasyonSistemi
                 query += " AND LogLine LIKE @PersonelFilter";
             }
 
-            query += " AND LogLine NOT LIKE '%Ürün Satışı%'";
+            query += " AND LogLine LIKE '%Ürün Eklendi%'";
 
             var connection = dataBaseService.GetCurrentConnection();
             SqlCommand command = new SqlCommand(query, connection);
