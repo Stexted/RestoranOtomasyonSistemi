@@ -2,6 +2,12 @@
 
 namespace RestoranOtomasyonSistemi
 {
+    public enum RaporType
+    {
+        Sale = 0,
+        Stock = 1
+    }
+
     public class DataBaseService : BaseService
     {
         private const string DefaultConnectionString = "Server=localhost\\SQLEXPRESS; Database=TestDB; Integrated Security=True; Encrypt=False;";
@@ -244,7 +250,7 @@ namespace RestoranOtomasyonSistemi
                 commandUpdate.Parameters.AddWithValue("@YemekID", foodInfo.FoodID);
 
                 commandUpdate.ExecuteNonQuery();
-                AddReportEntry("Ürün satışı gerçekleşti: " + foodInfo.FoodName +" Satış Tutarı: " + foodInfo.FoodPrice +" Satılan Miktar: " + decreaseAmount + " PersonelId: " + personelId + " MasaId: " + tableId);
+                AddReportEntry("Ürün satışı gerçekleşti: " + foodInfo.FoodName +" Satış Tutarı: " + foodInfo.FoodPrice +" Satılan Miktar: " + decreaseAmount + " PersonelId: " + personelId + " MasaId: " + tableId, RaporType.Sale);
 
                 LoadFoods();
                 return false;
@@ -257,14 +263,16 @@ namespace RestoranOtomasyonSistemi
             }
         }
 
-        public void AddReportEntry(string logText)
+        public void AddReportEntry(string logText, RaporType raporType)
         {
             try
             {
-                string query = "INSERT INTO Rapor (LogLine, Time) VALUES (@LogLine, @Time)";
+                var raporTypeStr = raporType.ToString();
+                string query = "INSERT INTO Rapor (LogLine, Time, RaporType) VALUES (@LogLine, @Time, @RaporType)";
                 SqlCommand command = new SqlCommand(query, connection);
                 command.Parameters.AddWithValue("@LogLine", logText);
                 command.Parameters.AddWithValue("@Time", DateTime.Now);
+                command.Parameters.AddWithValue("@RaporType", raporTypeStr);
 
                 command.ExecuteNonQuery();
             }
@@ -496,6 +504,7 @@ namespace RestoranOtomasyonSistemi
                     CREATE TABLE Rapor
                     (
                         RaporID INT IDENTITY(1,1) PRIMARY KEY,  
+                        RaporType NVARCHAR(50),
                         LogLine NVARCHAR(255),                    
                         Time DATETIME                        
                     );

@@ -90,6 +90,7 @@ namespace RestoranOtomasyonSistemi
         {
             List<LogEntry> logList = new List<LogEntry>();
             decimal totalSales = 0;
+            string raporTypeString = RaporType.Sale.ToString();
 
             string query = "SELECT * FROM Rapor WHERE 1=1";
 
@@ -103,7 +104,7 @@ namespace RestoranOtomasyonSistemi
                 query += " AND LogLine LIKE @PersonelFilter";
             }
 
-            query += " AND LogLine LIKE '%Ürün Satışı%'";
+            query += " AND RaporType = @RaporType";
 
             var connection = dataBaseService.GetCurrentConnection();
             SqlCommand command = new SqlCommand(query, connection);
@@ -111,8 +112,10 @@ namespace RestoranOtomasyonSistemi
             if (checkBoxTarih.Checked)
             {
                 command.Parameters.AddWithValue("@StartDate", dateTimePickerStart.Value.Date);
-                command.Parameters.AddWithValue("@EndDate", dateTimePickerEnd.Value.Date.AddDays(1).AddSeconds(-1));
+                command.Parameters.AddWithValue("@EndDate", dateTimePickerEnd.Value.Date.AddDays(1).AddSeconds(-1));          
             }
+
+            command.Parameters.AddWithValue("@RaporType", raporTypeString);
 
             if (!string.IsNullOrWhiteSpace(txtPersonelId.Text))
             {

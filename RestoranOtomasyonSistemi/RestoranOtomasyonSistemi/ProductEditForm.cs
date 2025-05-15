@@ -161,7 +161,7 @@ namespace RestoranOtomasyonSistemi
                 if (rowsAffected > 0)
                 {
                     MessageBox.Show("Yemek başarıyla eklendi.");
-                    dataBaseService.AddReportEntry("Ürün eklendi :" + yemekAdi + " Stok:" + stok);
+                    dataBaseService.AddReportEntry("Ürün eklendi : " + yemekAdi + " Stok:" + stok, RaporType.Stock);
                     LoadData();
                 }
             }
@@ -245,7 +245,7 @@ namespace RestoranOtomasyonSistemi
                     if (rowsAffected > 0)
                     {
                         MessageBox.Show("Yemek başarıyla silindi.");
-                        dataBaseService.AddReportEntry("Ürün silindi :" + yemekId);
+                        dataBaseService.AddReportEntry("Ürün silindi : " + yemekId, RaporType.Stock);
                         LoadData(); 
                     }
                 }
