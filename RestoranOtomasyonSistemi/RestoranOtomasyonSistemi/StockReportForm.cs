@@ -1,12 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using Microsoft.Data.SqlClient;
 
@@ -17,11 +12,10 @@ namespace RestoranOtomasyonSistemi
         private DateTimePicker dateTimePickerStart;
         private DateTimePicker dateTimePickerEnd;
         private CheckBox checkBoxTarih;
-        private Label txtPersonelIdLabel;
-        private TextBox txtPersonelId;
+        private TextBox txtYemekAdi;
+        private Label lblYemekAdi;
         private Button btnFiltrele;
         private DataGridView dataGridViewLogs;
-        private Label lblToplamSatis;
         private DataBaseService dataBaseService;
         private Button btnVerileriSil = new Button();
 
@@ -61,17 +55,17 @@ namespace RestoranOtomasyonSistemi
             checkBoxTarih.Location = new Point(250, 20);
             this.Controls.Add(checkBoxTarih);
 
-            txtPersonelIdLabel = new Label();
-            txtPersonelIdLabel.Text = "Personel ID Filtresi:";
-            txtPersonelIdLabel.Location = new Point(350, 23);
-            txtPersonelIdLabel.AutoSize = true;
-            this.Controls.Add(txtPersonelIdLabel);
+            lblYemekAdi = new Label();
+            lblYemekAdi.Text = "Yemek Adı Ara:";
+            lblYemekAdi.Location = new Point(350, 23);
+            lblYemekAdi.AutoSize = true;
+            this.Controls.Add(lblYemekAdi);
 
-            txtPersonelId = new TextBox();
-            txtPersonelId.Location = new Point(460, 20);
-            txtPersonelId.Width = 100;
-            txtPersonelId.PlaceholderText = "Personel ID";
-            this.Controls.Add(txtPersonelId);
+            txtYemekAdi = new TextBox();
+            txtYemekAdi.Location = new Point(440, 20);
+            txtYemekAdi.Width = 120;
+            txtYemekAdi.PlaceholderText = "Yemek adı";
+            this.Controls.Add(txtYemekAdi);
 
             btnFiltrele = new Button();
             btnFiltrele.Text = "Filtrele";
@@ -85,37 +79,30 @@ namespace RestoranOtomasyonSistemi
             dataGridViewLogs.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
             this.Controls.Add(dataGridViewLogs);
 
-            lblToplamSatis = new Label();
-            lblToplamSatis.Text = "Toplam Satış Miktarı: 0";
-            lblToplamSatis.Location = new Point(20, 480);
-            lblToplamSatis.Font = new Font("Segoe UI", 10, FontStyle.Bold);
-            this.Controls.Add(lblToplamSatis);
-
-
+            // Toplam satış label'ı kaldırıldı.
         }
 
         private void BtnFiltrele_Click(object sender, EventArgs e)
         {
             List<LogEntry> logList = new List<LogEntry>();
-            decimal totalSales = 0;
             string raporTypeString = RaporType.Stock.ToString();
 
-            string query = "SELECT * FROM Rapor WHERE 1=1";
+            string query = "SELECT * FROM Rapor WHERE RaporType = @RaporType";
 
             if (checkBoxTarih.Checked)
             {
                 query += " AND Time BETWEEN @StartDate AND @EndDate";
             }
 
-            if (!string.IsNullOrWhiteSpace(txtPersonelId.Text))
+            if (!string.IsNullOrWhiteSpace(txtYemekAdi.Text))
             {
-                query += " AND LogLine LIKE @PersonelFilter";
+                query += " AND LogLine LIKE @YemekAdiFilter";
             }
-
-            query += " AND RaporType = @RaporType";
 
             var connection = dataBaseService.GetCurrentConnection();
             SqlCommand command = new SqlCommand(query, connection);
+
+            command.Parameters.AddWithValue("@RaporType", raporTypeString);
 
             if (checkBoxTarih.Checked)
             {
@@ -123,12 +110,9 @@ namespace RestoranOtomasyonSistemi
                 command.Parameters.AddWithValue("@EndDate", dateTimePickerEnd.Value.Date.AddDays(1).AddSeconds(-1));
             }
 
-            command.Parameters.AddWithValue("@RaporType", raporTypeString);
-
-
-            if (!string.IsNullOrWhiteSpace(txtPersonelId.Text))
+            if (!string.IsNullOrWhiteSpace(txtYemekAdi.Text))
             {
-                command.Parameters.AddWithValue("@PersonelFilter", "%PersonelId: " + txtPersonelId.Text + "%");
+                command.Parameters.AddWithValue("@YemekAdiFilter", "%" + txtYemekAdi.Text + "%");
             }
 
             using (SqlDataReader reader = command.ExecuteReader())
@@ -139,16 +123,10 @@ namespace RestoranOtomasyonSistemi
                     DateTime time = Convert.ToDateTime(reader["Time"]);
 
                     logList.Add(new LogEntry { LogLine = logLine, Time = time });
-
-                    decimal miktar = ParseSatisTutari(logLine);
-                    totalSales += miktar;
                 }
             }
 
-
             dataGridViewLogs.DataSource = logList;
-            lblToplamSatis.Width = 3000;
-            lblToplamSatis.Text = "Toplam Satış Miktarı: " + totalSales + "TL";
         }
 
         private void BtnVerileriSil_Click(object sender, EventArgs e)
@@ -171,28 +149,13 @@ namespace RestoranOtomasyonSistemi
                     int affected = command.ExecuteNonQuery();
                     MessageBox.Show($"{affected} kayıt silindi.", "Başarılı", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
-
                     dataGridViewLogs.DataSource = null;
-                    lblToplamSatis.Text = "Toplam Satış Miktarı: 0TL";
                 }
                 catch (Exception ex)
                 {
                     MessageBox.Show("Hata oluştu: " + ex.Message, "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
-        }
-
-        private decimal ParseSatisTutari(string logLine)
-        {
-            var match = Regex.Match(logLine, @"Satış Tutarı: (\d+[\.,]?\d*)");
-            if (match.Success)
-            {
-                if (decimal.TryParse(match.Groups[1].Value.Replace(',', '.'), System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out decimal tutar))
-                {
-                    return tutar;
-                }
-            }
-            return 0m;
         }
 
         // Grid için sınıf

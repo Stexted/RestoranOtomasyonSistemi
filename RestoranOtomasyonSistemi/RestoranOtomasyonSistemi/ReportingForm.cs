@@ -1,6 +1,9 @@
-﻿using System.Text.RegularExpressions;
+﻿using System;
+using System.Collections.Generic;
+using System.Drawing;
+using System.Text.RegularExpressions;
+using System.Windows.Forms;
 using Microsoft.Data.SqlClient;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.ToolTip;
 
 namespace RestoranOtomasyonSistemi
 {
@@ -11,6 +14,7 @@ namespace RestoranOtomasyonSistemi
         private CheckBox checkBoxTarih;
         private Label txtPersonelIdLabel;
         private TextBox txtPersonelId;
+        private TextBox txtYemekAra;
         private Button btnFiltrele;
         private DataGridView dataGridViewLogs;
         private Label lblToplamSatis;
@@ -65,9 +69,15 @@ namespace RestoranOtomasyonSistemi
             txtPersonelId.PlaceholderText = "Personel ID";
             this.Controls.Add(txtPersonelId);
 
+            txtYemekAra = new TextBox();
+            txtYemekAra.Location = new Point(570, 20);
+            txtYemekAra.Width = 100;
+            txtYemekAra.PlaceholderText = "Yemek Ara";
+            this.Controls.Add(txtYemekAra);
+
             btnFiltrele = new Button();
             btnFiltrele.Text = "Filtrele";
-            btnFiltrele.Location = new Point(670, 18);
+            btnFiltrele.Location = new Point(700, 18);
             btnFiltrele.Click += BtnFiltrele_Click;
             this.Controls.Add(btnFiltrele);
 
@@ -82,8 +92,6 @@ namespace RestoranOtomasyonSistemi
             lblToplamSatis.Location = new Point(20, 480);
             lblToplamSatis.Font = new Font("Segoe UI", 10, FontStyle.Bold);
             this.Controls.Add(lblToplamSatis);
-
-
         }
 
         private void BtnFiltrele_Click(object sender, EventArgs e)
@@ -104,6 +112,11 @@ namespace RestoranOtomasyonSistemi
                 query += " AND LogLine LIKE @PersonelFilter";
             }
 
+            if (!string.IsNullOrWhiteSpace(txtYemekAra.Text))
+            {
+                query += " AND LogLine LIKE @YemekAra";
+            }
+
             query += " AND RaporType = @RaporType";
 
             var connection = dataBaseService.GetCurrentConnection();
@@ -112,7 +125,7 @@ namespace RestoranOtomasyonSistemi
             if (checkBoxTarih.Checked)
             {
                 command.Parameters.AddWithValue("@StartDate", dateTimePickerStart.Value.Date);
-                command.Parameters.AddWithValue("@EndDate", dateTimePickerEnd.Value.Date.AddDays(1).AddSeconds(-1));          
+                command.Parameters.AddWithValue("@EndDate", dateTimePickerEnd.Value.Date.AddDays(1).AddSeconds(-1));
             }
 
             command.Parameters.AddWithValue("@RaporType", raporTypeString);
@@ -120,6 +133,11 @@ namespace RestoranOtomasyonSistemi
             if (!string.IsNullOrWhiteSpace(txtPersonelId.Text))
             {
                 command.Parameters.AddWithValue("@PersonelFilter", "%PersonelId: " + txtPersonelId.Text + "%");
+            }
+
+            if (!string.IsNullOrWhiteSpace(txtYemekAra.Text))
+            {
+                command.Parameters.AddWithValue("@YemekAra", "%" + txtYemekAra.Text + "%");
             }
 
             using (SqlDataReader reader = command.ExecuteReader())
@@ -135,11 +153,10 @@ namespace RestoranOtomasyonSistemi
                     totalSales += miktar;
                 }
             }
-            
 
             dataGridViewLogs.DataSource = logList;
             lblToplamSatis.Width = 3000;
-            lblToplamSatis.Text = "Toplam Satış Miktarı: " + totalSales +"TL";
+            lblToplamSatis.Text = "Toplam Satış Miktarı: " + totalSales + "TL";
         }
 
         private void BtnVerileriSil_Click(object sender, EventArgs e)
@@ -161,7 +178,6 @@ namespace RestoranOtomasyonSistemi
                     SqlCommand command = new SqlCommand(query, connection);
                     int affected = command.ExecuteNonQuery();
                     MessageBox.Show($"{affected} kayıt silindi.", "Başarılı", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    
 
                     dataGridViewLogs.DataSource = null;
                     lblToplamSatis.Text = "Toplam Satış Miktarı: 0TL";
