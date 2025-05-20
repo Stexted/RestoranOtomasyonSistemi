@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Text.RegularExpressions;
 using System.Windows.Forms;
 using Microsoft.Data.SqlClient;
 
@@ -78,8 +77,6 @@ namespace RestoranOtomasyonSistemi
             dataGridViewLogs.Size = new Size(840, 400);
             dataGridViewLogs.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
             this.Controls.Add(dataGridViewLogs);
-
-            // Toplam satış label'ı kaldırıldı.
         }
 
         private void BtnFiltrele_Click(object sender, EventArgs e)
@@ -88,6 +85,9 @@ namespace RestoranOtomasyonSistemi
             string raporTypeString = RaporType.Stock.ToString();
 
             string query = "SELECT * FROM Rapor WHERE RaporType = @RaporType";
+
+            // Stokla ilgili tüm hareketler: eklenme, bitme, eksilme vs.
+            query += " AND LogLine LIKE '%stok%'";
 
             if (checkBoxTarih.Checked)
             {
@@ -158,7 +158,6 @@ namespace RestoranOtomasyonSistemi
             }
         }
 
-        // Grid için sınıf
         public class LogEntry
         {
             public string LogLine { get; set; }

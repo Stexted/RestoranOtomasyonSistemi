@@ -1,11 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using Microsoft.Data.SqlClient;
 
@@ -14,6 +9,7 @@ namespace RestoranOtomasyonSistemi
     public partial class ProductEditForm : Form
     {
         private DataBaseService dataBaseService;
+        private TextBox txtArama;
 
         public ProductEditForm()
         {
@@ -29,46 +25,41 @@ namespace RestoranOtomasyonSistemi
 
         private void AddControls()
         {
-           
             dataGridView1 = new DataGridView
             {
-                Location = new System.Drawing.Point(20, 150),
-                Size = new System.Drawing.Size(600, 200),
+                Location = new Point(20, 150),
+                Size = new Size(600, 200),
                 AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill
             };
+            dataGridView1.SelectionChanged += dataGridView1_SelectionChanged;
             this.Controls.Add(dataGridView1);
 
-            dataGridView1.SelectionChanged += dataGridView1_SelectionChanged;
-
-        
             txtYemekAdi = new TextBox
             {
-                Location = new System.Drawing.Point(20, 20),
-                Size = new System.Drawing.Size(150, 20)
+                Location = new Point(20, 20),
+                Size = new Size(150, 20)
             };
             this.Controls.Add(txtYemekAdi);
 
-     
             txtFiyat = new TextBox
             {
-                Location = new System.Drawing.Point(20, 50),
-                Size = new System.Drawing.Size(150, 20)
+                Location = new Point(20, 50),
+                Size = new Size(150, 20)
             };
             this.Controls.Add(txtFiyat);
 
-
             txtStok = new TextBox
             {
-                Location = new System.Drawing.Point(20, 80),
-                Size = new System.Drawing.Size(150, 20)
+                Location = new Point(20, 80),
+                Size = new Size(150, 20)
             };
             this.Controls.Add(txtStok);
 
             btnEkle = new Button
             {
                 Text = "Ekle",
-                Location = new System.Drawing.Point(200, 20),
-                Size = new System.Drawing.Size(75, 30)
+                Location = new Point(200, 20),
+                Size = new Size(75, 30)
             };
             btnEkle.Click += btnEkle_Click;
             this.Controls.Add(btnEkle);
@@ -76,8 +67,8 @@ namespace RestoranOtomasyonSistemi
             btnDuzenle = new Button
             {
                 Text = "Düzenle",
-                Location = new System.Drawing.Point(200, 60),
-                Size = new System.Drawing.Size(75, 30)
+                Location = new Point(200, 60),
+                Size = new Size(75, 30)
             };
             btnDuzenle.Click += btnDuzenle_Click;
             this.Controls.Add(btnDuzenle);
@@ -85,54 +76,75 @@ namespace RestoranOtomasyonSistemi
             btnSil = new Button
             {
                 Text = "Sil",
-                Location = new System.Drawing.Point(200, 100),
-                Size = new System.Drawing.Size(75, 30)
+                Location = new Point(200, 100),
+                Size = new Size(75, 30)
             };
             btnSil.Click += btnSil_Click;
             this.Controls.Add(btnSil);
-        }
 
+            Label lblArama = new Label
+            {
+                Text = "Ara:",
+                Location = new Point(450, 20),
+                AutoSize = true
+            };
+            this.Controls.Add(lblArama);
+
+            txtArama = new TextBox
+            {
+                Location = new Point(490, 18),
+                Size = new Size(130, 22)
+            };
+            txtArama.TextChanged += TxtArama_TextChanged;
+            this.Controls.Add(txtArama);
+        }
 
         private void LoadData()
         {
-
             var connection = ServiceLocator.GetService<DataBaseService>().GetCurrentConnection();
-
             try
             {
-                string query = "SELECT * FROM Yemekler"; 
+                string query = "SELECT * FROM Yemekler";
                 SqlDataAdapter adapter = new SqlDataAdapter(query, connection);
                 DataTable dataTable = new DataTable();
                 adapter.Fill(dataTable);
-                dataGridView1.DataSource = dataTable; 
+                dataGridView1.DataSource = dataTable;
             }
             catch (Exception ex)
             {
                 MessageBox.Show("Hata: " + ex.Message);
             }
-            
         }
 
-        
+        private void TxtArama_TextChanged(object sender, EventArgs e)
+        {
+            string aranan = txtArama.Text.ToLower();
+            if (dataGridView1.DataSource is DataTable dt)
+            {
+                DataView dv = dt.DefaultView;
+                dv.RowFilter = $"YemekAdi LIKE '%{aranan.Replace("'", "''")}%'"; // Güvenlik için ' escape
+            }
+        }
+
         private void btnEkle_Click(object sender, EventArgs e)
         {
-            if(txtFiyat.Text == "" || txtStok.Text == "" || txtYemekAdi.Text == "")
+            if (txtFiyat.Text == "" || txtStok.Text == "" || txtYemekAdi.Text == "")
             {
                 MessageBox.Show("Lütfen tüm alanları doldurun.");
                 return;
             }
 
             string yemekAdi = txtYemekAdi.Text;
-            decimal fiyat = 0;
-            int stok = 0;
+            decimal fiyat;
+            int stok;
 
             try
             {
                 fiyat = Convert.ToDecimal(txtFiyat.Text);
             }
-            catch (FormatException)
+            catch
             {
-                MessageBox.Show("Fiyat alanı geçersiz bir formatta. Lütfen sayısal bir değer girin.");
+                MessageBox.Show("Fiyat alanı geçersiz. Sayı girin.");
                 return;
             }
 
@@ -140,9 +152,9 @@ namespace RestoranOtomasyonSistemi
             {
                 stok = Convert.ToInt32(txtStok.Text);
             }
-            catch (FormatException)
+            catch
             {
-                MessageBox.Show("Stok alanı geçersiz bir formatta. Lütfen sayısal bir değer girin.");
+                MessageBox.Show("Stok alanı geçersiz. Sayı girin.");
                 return;
             }
 
@@ -156,7 +168,6 @@ namespace RestoranOtomasyonSistemi
                 command.Parameters.AddWithValue("@Fiyat", fiyat);
                 command.Parameters.AddWithValue("@Stok", stok);
 
-
                 int rowsAffected = command.ExecuteNonQuery();
                 if (rowsAffected > 0)
                 {
@@ -169,7 +180,6 @@ namespace RestoranOtomasyonSistemi
             {
                 MessageBox.Show("Hata: " + ex.Message);
             }
-            
         }
 
         private void dataGridView1_SelectionChanged(object sender, EventArgs e)
@@ -196,7 +206,6 @@ namespace RestoranOtomasyonSistemi
 
                 try
                 {
- 
                     string query = "UPDATE Yemekler SET YemekAdi = @YemekAdi, Fiyat = @Fiyat, Stok = @Stok WHERE YemekID = @YemekID";
                     SqlCommand command = new SqlCommand(query, connection);
                     command.Parameters.AddWithValue("@YemekAdi", yeniYemekAdi);
@@ -208,14 +217,14 @@ namespace RestoranOtomasyonSistemi
                     if (rowsAffected > 0)
                     {
                         MessageBox.Show("Yemek başarıyla güncellendi.");
-                        LoadData(); 
+                        LoadData();
                     }
                 }
                 catch (Exception ex)
                 {
                     MessageBox.Show("Hata: " + ex.Message);
                 }
-                
+
             }
             else
             {
@@ -239,14 +248,11 @@ namespace RestoranOtomasyonSistemi
                     command.Parameters.AddWithValue("@YemekID", yemekId);
 
                     int rowsAffected = command.ExecuteNonQuery();
-
-
-
                     if (rowsAffected > 0)
                     {
                         MessageBox.Show("Yemek başarıyla silindi.");
                         dataBaseService.AddReportEntry("Ürün silindi : " + yemekId, RaporType.Stock);
-                        LoadData(); 
+                        LoadData();
                     }
                 }
                 catch (Exception ex)
@@ -254,7 +260,6 @@ namespace RestoranOtomasyonSistemi
                     MessageBox.Show("Hata: " + ex.Message);
                 }
             }
-
         }
 
         private void button1_Click_1(object sender, EventArgs e)
@@ -268,4 +273,3 @@ namespace RestoranOtomasyonSistemi
         }
     }
 }
-

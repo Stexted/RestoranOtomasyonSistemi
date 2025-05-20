@@ -52,7 +52,10 @@ namespace RestoranOtomasyonSistemi
 
         private void button6_Click(object sender, EventArgs e)
         {
-
+            PersonelYonetimForm PersonelYonetimForm = new PersonelYonetimForm();
+            PersonelYonetimForm.Show();
+            PersonelYonetimForm.FormClosed += (s, args) => this.Show();
+            this.Hide();
         }
 
         private void button5_Click(object sender, EventArgs e)
