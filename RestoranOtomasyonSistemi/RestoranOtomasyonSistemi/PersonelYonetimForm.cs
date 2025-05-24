@@ -9,12 +9,14 @@ namespace RestoranOtomasyonSistemi
     {
         private DataBaseService dbService;
         private int selectedPersonelId = -1;
+        private DataTable personelTable;
 
         public PersonelYonetimForm()
         {
             InitializeComponent();
             dbService = new DataBaseService();
             dbService.InitializeService();
+            txtAra.TextChanged += txtAra_TextChanged;
         }
 
         private void PersonelYonetimForm_Load(object sender, EventArgs e)
@@ -29,11 +31,11 @@ namespace RestoranOtomasyonSistemi
                 string query = "SELECT PersonelID, KullaniciAdi, Sifre, Tarih FROM Personeller";
                 SqlCommand cmd = new SqlCommand(query, dbService.GetCurrentConnection());
                 SqlDataAdapter da = new SqlDataAdapter(cmd);
-                DataTable dt = new DataTable();
-                da.Fill(dt);
+                personelTable = new DataTable();
+                da.Fill(personelTable);
 
-                dataGridView1.DataSource = dt;
-                dataGridView1.Columns["Sifre"].Visible = false; // Şifreleri göstermiyoruz
+                dataGridView1.DataSource = personelTable;
+                dataGridView1.Columns["Sifre"].Visible = false;
                 dataGridView1.Columns["PersonelID"].HeaderText = "ID";
                 dataGridView1.Columns["KullaniciAdi"].HeaderText = "Kullanıcı Adı";
                 dataGridView1.Columns["Tarih"].HeaderText = "Kayıt Tarihi";
@@ -42,6 +44,15 @@ namespace RestoranOtomasyonSistemi
             {
                 MessageBox.Show("Personel listesi yüklenirken hata oluştu: " + ex.Message);
             }
+        }
+
+        private void txtAra_TextChanged(object sender, EventArgs e)
+        {
+            if (personelTable == null) return;
+
+            string filter = txtAra.Text.Trim().Replace("'", "''");
+            (dataGridView1.DataSource as DataTable).DefaultView.RowFilter =
+                $"KullaniciAdi LIKE '%{filter}%'";
         }
 
         private void dataGridView1_SelectionChanged(object sender, EventArgs e)
@@ -82,8 +93,6 @@ namespace RestoranOtomasyonSistemi
                 Temizle();
             }
         }
-
-        // btnEkle_Click metodu kaldırıldı (artık yok)
 
         private void btnGuncelle_Click(object sender, EventArgs e)
         {

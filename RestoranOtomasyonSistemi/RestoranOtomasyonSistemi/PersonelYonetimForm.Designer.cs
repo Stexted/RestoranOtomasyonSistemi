@@ -4,14 +4,17 @@
     {
         private System.ComponentModel.IContainer components = null;
 
-        private DataGridView dataGridView1;
-        private Button btnGuncelle;
-        private Button btnSil;
-        private TextBox txtKullaniciAdi;
-        private TextBox txtSifre;
-        private Label label1;
-        private Label label2;
-        private DateTimePicker dateTimePicker1;
+        private System.Windows.Forms.DataGridView dataGridView1;
+        private System.Windows.Forms.Button btnGuncelle;
+        private System.Windows.Forms.Button btnSil;
+        private System.Windows.Forms.TextBox txtKullaniciAdi;
+        private System.Windows.Forms.TextBox txtSifre;
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.DateTimePicker dateTimePicker1;
+        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.Label labelAra;
+        private System.Windows.Forms.TextBox txtAra;
 
         protected override void Dispose(bool disposing)
         {
@@ -33,14 +36,31 @@
             this.label2 = new System.Windows.Forms.Label();
             this.dateTimePicker1 = new System.Windows.Forms.DateTimePicker();
             this.label3 = new System.Windows.Forms.Label();
+            this.labelAra = new System.Windows.Forms.Label();
+            this.txtAra = new System.Windows.Forms.TextBox();
+
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.SuspendLayout();
 
+            // labelAra
+            this.labelAra.AutoSize = true;
+            this.labelAra.Location = new System.Drawing.Point(12, 15);
+            this.labelAra.Name = "labelAra";
+            this.labelAra.Size = new System.Drawing.Size(29, 13);
+            this.labelAra.TabIndex = 10;
+            this.labelAra.Text = "Ara:";
+
+            // txtAra
+            this.txtAra.Location = new System.Drawing.Point(50, 12);
+            this.txtAra.Name = "txtAra";
+            this.txtAra.Size = new System.Drawing.Size(200, 20);
+            this.txtAra.TabIndex = 11;
+
             // dataGridView1
             this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dataGridView1.Location = new System.Drawing.Point(12, 12);
+            this.dataGridView1.Location = new System.Drawing.Point(12, 40);
             this.dataGridView1.Name = "dataGridView1";
-            this.dataGridView1.Size = new System.Drawing.Size(560, 300);
+            this.dataGridView1.Size = new System.Drawing.Size(560, 272);
             this.dataGridView1.TabIndex = 0;
             this.dataGridView1.SelectionChanged += new System.EventHandler(this.dataGridView1_SelectionChanged);
 
@@ -109,6 +129,8 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(584, 422);
+            this.Controls.Add(this.labelAra);
+            this.Controls.Add(this.txtAra);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.dateTimePicker1);
             this.Controls.Add(this.label2);
@@ -117,7 +139,6 @@
             this.Controls.Add(this.txtKullaniciAdi);
             this.Controls.Add(this.btnSil);
             this.Controls.Add(this.btnGuncelle);
-
             this.Controls.Add(this.dataGridView1);
             this.Name = "PersonelYonetimForm";
             this.Text = "Personel Yönetim";
@@ -126,7 +147,5 @@
             this.ResumeLayout(false);
             this.PerformLayout();
         }
-
-        private Label label3;
     }
 }
