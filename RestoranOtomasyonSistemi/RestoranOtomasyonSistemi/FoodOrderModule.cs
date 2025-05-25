@@ -40,22 +40,12 @@ namespace RestoranOtomasyonSistemi
 
             var loadedFoods = databaseService.LoadFoods();
 
-
-            foreach (Control control in orderButtons)
-            {
-                if (control is Button)
-                {
-                    this.Controls.Remove(control);
-                    control.Dispose();
-                }
-            }
-
+            flowLayoutPanel1.Controls.Clear();
             orderButtons.Clear();
 
 
             if (loadedFoods != null)
             {
-                var yOffset = 5;
                 foreach (var food in loadedFoods)
                 {
                     if (food != null && food.Stock > 0)
@@ -66,13 +56,10 @@ namespace RestoranOtomasyonSistemi
                         orderButton.Text = $"{food.FoodName} - {food.FoodPrice:C2}";
                         orderButton.Name = $"btnOrder_{food.FoodID}";
                         orderButton.Tag = food.FoodID;
-                        orderButton.Location = new Point(20, yOffset);
                         orderButton.Size = new Size(200, 40);
                         orderButton.Click += AddFoodToBasket;
 
-                        this.Controls.Add(orderButton);
-
-                        yOffset += 50;
+                        flowLayoutPanel1.Controls.Add(orderButton);
                     }
                 }
             }

@@ -86,9 +86,6 @@ namespace RestoranOtomasyonSistemi
 
             string query = "SELECT * FROM Rapor WHERE RaporType = @RaporType";
 
-            // Stokla ilgili tüm hareketler: eklenme, bitme, eksilme vs.
-            query += " AND LogLine LIKE '%stok%'";
-
             if (checkBoxTarih.Checked)
             {
                 query += " AND Time BETWEEN @StartDate AND @EndDate";

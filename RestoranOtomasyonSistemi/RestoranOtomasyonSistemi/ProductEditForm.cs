@@ -217,6 +217,8 @@ namespace RestoranOtomasyonSistemi
                     if (rowsAffected > 0)
                     {
                         MessageBox.Show("Yemek başarıyla güncellendi.");
+                        dataBaseService.AddReportEntry("Ürün düzenlendi : " + yeniYemekAdi + " Stok:" + yeniStok, RaporType.Stock);
+
                         LoadData();
                     }
                 }

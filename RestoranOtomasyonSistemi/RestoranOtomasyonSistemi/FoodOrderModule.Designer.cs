@@ -41,6 +41,7 @@ namespace RestoranOtomasyonSistemi
             label2 = new Label();
             timer1 = new System.Windows.Forms.Timer(components);
             label3 = new Label();
+            flowLayoutPanel1 = new FlowLayoutPanel();
             ((System.ComponentModel.ISupportInitialize)dataGridView1).BeginInit();
             SuspendLayout();
             // 
@@ -144,11 +145,22 @@ namespace RestoranOtomasyonSistemi
             label3.Text = "ss:dd:ss";
             label3.TextAlign = ContentAlignment.MiddleRight;
             // 
+            // flowLayoutPanel1
+            // 
+            flowLayoutPanel1.AutoScroll = true;
+            flowLayoutPanel1.FlowDirection = FlowDirection.TopDown;
+            flowLayoutPanel1.Location = new Point(12, 12);
+            flowLayoutPanel1.Name = "flowLayoutPanel1";
+            flowLayoutPanel1.Size = new Size(376, 295);
+            flowLayoutPanel1.TabIndex = 10;
+            flowLayoutPanel1.WrapContents = false;
+            // 
             // FoodOrderModule
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(951, 474);
+            Controls.Add(flowLayoutPanel1);
             Controls.Add(label3);
             Controls.Add(label2);
             Controls.Add(button4);
@@ -179,6 +191,7 @@ namespace RestoranOtomasyonSistemi
         private Label label2;
         private System.Windows.Forms.Timer timer1;
         private Label label3;
+        private FlowLayoutPanel flowLayoutPanel1;
     }
 }
 
