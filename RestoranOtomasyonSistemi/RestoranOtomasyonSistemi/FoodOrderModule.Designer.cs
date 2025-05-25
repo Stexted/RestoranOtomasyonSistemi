@@ -154,6 +154,7 @@ namespace RestoranOtomasyonSistemi
             flowLayoutPanel1.Size = new Size(376, 295);
             flowLayoutPanel1.TabIndex = 10;
             flowLayoutPanel1.WrapContents = false;
+            flowLayoutPanel1.Paint += flowLayoutPanel1_Paint;
             // 
             // FoodOrderModule
             // 

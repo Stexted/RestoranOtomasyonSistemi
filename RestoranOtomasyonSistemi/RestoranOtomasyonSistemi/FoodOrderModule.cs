@@ -61,7 +61,8 @@ namespace RestoranOtomasyonSistemi
                         orderButton.Tag = food.FoodID;
                         orderButton.Size = new Size(200, 40);
                         orderButton.Click += AddFoodToBasket;
-
+                        orderButton.Margin = new Padding(80, 5, 0, 5);
+                        orderButton.BackColor = Color.LightGreen;
                         flowLayoutPanel1.Controls.Add(orderButton);
                     }
                 }
@@ -185,6 +186,11 @@ namespace RestoranOtomasyonSistemi
                 label3.ForeColor = Color.Green;
                 label3.Text = "Boþ";
             }
+        }
+
+        private void flowLayoutPanel1_Paint(object sender, PaintEventArgs e)
+        {
+
         }
     }
 }
