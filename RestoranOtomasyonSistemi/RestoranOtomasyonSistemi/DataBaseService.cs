@@ -22,6 +22,7 @@ namespace RestoranOtomasyonSistemi
             CreateReportTableIfNotExists();
             CreatePersonelTableIfNotExists();
             CreateTablesTableIfNotExists();
+            CreateBasketTableIfNotExists();
         }
 
         public void CheckConfigurationFile()
@@ -592,6 +593,117 @@ namespace RestoranOtomasyonSistemi
             catch (Exception ex)
             {
                 MessageBox.Show("Hata: " + ex.Message);
+            }
+        }
+
+        public void CreateBasketTableIfNotExists()
+        {
+            try
+            {
+                string query = @"
+        IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'Basket')
+        BEGIN
+            CREATE TABLE Basket
+            (
+                BasketID INT IDENTITY(1,1) PRIMARY KEY,
+                MasaID INT NOT NULL,
+                FoodID INT NOT NULL,
+                Quantity INT NOT NULL,
+                TotalPrice DECIMAL(10, 2) NOT NULL,
+                CreatedAt DATETIME DEFAULT GETDATE()
+            );
+        END";
+
+                SqlCommand command = new SqlCommand(query, connection);
+                command.ExecuteNonQuery();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Basket tablosu oluşturulurken hata: {ex.Message}");
+            }
+        }
+
+        public void SaveBasket(int masaId, BasketInfo basket)
+        {
+            CreateBasketTableIfNotExists();
+
+            var basketItems = basket.ReadyToOrderFoods;
+
+            foreach (var item in basketItems)
+            {
+                int foodId = item.FoodID;
+                int quantity = 1;
+
+                var food = GetFoodInfoById(foodId);
+                if (food == null) continue;
+
+                decimal totalPrice = food.FoodPrice * quantity;
+
+                string insertQuery = @"
+            INSERT INTO Basket (MasaID, FoodID, Quantity, TotalPrice, CreatedAt) 
+            VALUES (@MasaID, @FoodID, @Quantity, @TotalPrice, @CreatedAt)";
+
+                using (SqlCommand command = new SqlCommand(insertQuery, connection))
+                {
+                    command.Parameters.AddWithValue("@MasaID", masaId);
+                    command.Parameters.AddWithValue("@FoodID", foodId);
+                    command.Parameters.AddWithValue("@Quantity", quantity);
+                    command.Parameters.AddWithValue("@TotalPrice", totalPrice);
+                    command.Parameters.AddWithValue("@CreatedAt", DateTime.Now);
+
+                    command.ExecuteNonQuery();
+                }
+            }
+        }
+
+        public BasketInfo LoadBasket(int masaId)
+        {
+            CreateBasketTableIfNotExists();
+
+            BasketInfo basket = new BasketInfo();
+            var items = new List<(int foodId, int quantity)>();
+
+            string query = "SELECT FoodID, Quantity FROM Basket WHERE MasaID = @MasaID";
+            using (SqlCommand command = new SqlCommand(query, connection))
+            {
+                command.Parameters.AddWithValue("@MasaID", masaId);
+
+                using (SqlDataReader reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        int foodId = reader.GetInt32(0);
+                        int quantity = reader.GetInt32(1);
+                        items.Add((foodId, quantity));
+                    }
+                }
+            }
+
+            foreach (var item in items)
+            {
+                for (int i = 0; i < item.quantity; i++)
+                {
+                    basket.AddToBasket(item.foodId);
+                }
+            }
+
+            return basket;
+        }
+
+        public void ClearBasketByTableId(int masaId)
+        {
+            try
+            {
+                string query = "DELETE FROM Basket WHERE MasaID = @MasaID";
+                using (SqlCommand command = new SqlCommand(query, connection))
+                {
+                    command.Parameters.AddWithValue("@MasaID", masaId);
+                    command.ExecuteNonQuery();
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Sepet temizlenirken hata oluştu: " + ex.Message);
             }
         }
 

@@ -10,7 +10,6 @@ namespace RestoranOtomasyonSistemi
         { 
             var dataBaseService = ServiceLocator.GetService<DataBaseService>();
             ReadyToOrderFoods.Add(dataBaseService.GetFoodInfoById(foodID));
-              
         }
 
         public void ClearBasket()

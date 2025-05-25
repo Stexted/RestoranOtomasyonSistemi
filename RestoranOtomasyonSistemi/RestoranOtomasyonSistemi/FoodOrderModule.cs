@@ -27,6 +27,8 @@ namespace RestoranOtomasyonSistemi
             this.personelId = personelId;
             this.masaTakipModule = masaTakipModule;
             Text = $"Sipariþ Modülü - Masa: {selectedTableId}";
+
+
             UpdateTimer();
         }
 
@@ -39,6 +41,7 @@ namespace RestoranOtomasyonSistemi
         {
 
             var loadedFoods = databaseService.LoadFoods();
+            totalBasketInfo = databaseService.LoadBasket(tableId);
 
             flowLayoutPanel1.Controls.Clear();
             orderButtons.Clear();
@@ -101,6 +104,7 @@ namespace RestoranOtomasyonSistemi
                 totalBasketInfo.AddToBasket(foodId.FoodID);
             }
 
+            databaseService.SaveBasket(tableId, basketInfo);
             dataGridView1.DataSource = null;
             dataGridView1.Rows.Clear();
 

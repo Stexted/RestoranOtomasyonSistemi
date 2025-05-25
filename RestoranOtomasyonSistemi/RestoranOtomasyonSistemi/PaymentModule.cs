@@ -29,7 +29,6 @@ namespace RestoranOtomasyonSistemi
             decimal totalAmount = totalBasketInfo.GetTotalAmount();
             label2.Text = $"{totalAmount} TL";
 
-
             foreach (FoodInfo foodInfo in totalBasketInfo.ReadyToOrderFoods)
             {
                 paymentFoodInfo.Add(new CustomerFoodInfo
@@ -55,6 +54,7 @@ namespace RestoranOtomasyonSistemi
 
         private void button1_Click(object sender, EventArgs e)
         {
+            databaseService.ClearBasketByTableId(tableId);
             databaseService.SetTableStatus(tableId, MasaDurumu.Bos, DateTime.Now);
             masaTakipModule.UpdateMasalar();
             Close();
